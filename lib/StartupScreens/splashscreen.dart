@@ -1,7 +1,5 @@
 import 'dart:async';
-
 import 'package:condition_report/StartupScreens/signIn.dart';
-import 'package:condition_report/StartupScreens/signup.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -13,12 +11,15 @@ class Splashscreen extends StatefulWidget {
 }
 
 class _SplashscreenState extends State<Splashscreen> {
+  @override
   void initState() {
     super.initState();
 
     Timer(const Duration(seconds: 2), () {
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => SignupScreen()));
+          context, MaterialPageRoute(builder: (context) => SignInScreen()));
+          // context,
+          // MaterialPageRoute(builder: (context) => ConditionReport()));
     });
   }
 

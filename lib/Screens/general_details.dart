@@ -443,56 +443,8 @@ class _GeneralDetailsState extends State<GeneralDetails> {
                                     color: Color.fromRGBO(57, 55, 56, 1),
                                   ),
                                   textAlign: TextAlign.start,
-                                  decoration: InputDecoration(
-                                    hintText: "Enter the Reference Number",
-                                    hintStyle: const TextStyle(
-                                      fontSize: 16,
-                                      fontStyle: FontStyle.normal,
-                                      fontWeight: FontWeight.w300,
-                                      color: Color.fromRGBO(57, 55, 56, 0.5),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    disabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    isDense: true,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 18,
-                                    ),
-                                  ),
+                                  decoration: myDecoration(
+                                      'Enter the Reference Number'),
                                 ),
                               ),
                             ],
@@ -543,56 +495,8 @@ class _GeneralDetailsState extends State<GeneralDetails> {
                                     color: Color.fromRGBO(57, 55, 56, 1),
                                   ),
                                   textAlign: TextAlign.start,
-                                  decoration: InputDecoration(
-                                    hintText: "Enter the Reference Number",
-                                    hintStyle: const TextStyle(
-                                      fontSize: 16,
-                                      fontStyle: FontStyle.normal,
-                                      fontWeight: FontWeight.w300,
-                                      color: Color.fromRGBO(57, 55, 56, 0.5),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    disabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    isDense: true,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 18,
-                                    ),
-                                  ),
+                                  decoration: myDecoration(
+                                      'Enter the Reference Number'),
                                 ),
                               ),
                             ],
@@ -617,7 +521,7 @@ class _GeneralDetailsState extends State<GeneralDetails> {
                                   ),
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 6),
+                                        horizontal: 5, vertical: 6),
                                     child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
@@ -660,8 +564,8 @@ class _GeneralDetailsState extends State<GeneralDetails> {
                                         color: const Color.fromRGBO(
                                             52, 199, 89, 0.2),
                                       ),
-                                      color:
-                                          const Color.fromRGBO(52, 199, 89, 0.1),
+                                      color: const Color.fromRGBO(
+                                          52, 199, 89, 0.1),
                                     ),
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(
@@ -689,8 +593,8 @@ class _GeneralDetailsState extends State<GeneralDetails> {
                                               fontFamily: 'Mundial',
                                               fontStyle: FontStyle.normal,
                                               fontWeight: FontWeight.w300,
-                                              color:
-                                                  Color.fromRGBO(52, 199, 89, 1),
+                                              color: Color.fromRGBO(
+                                                  52, 199, 89, 1),
                                             ),
                                           ),
                                         ],
@@ -870,56 +774,8 @@ class _GeneralDetailsState extends State<GeneralDetails> {
                                     color: Color.fromRGBO(57, 55, 56, 1),
                                   ),
                                   textAlign: TextAlign.start,
-                                  decoration: InputDecoration(
-                                    hintText: "Enter the House Name",
-                                    hintStyle: const TextStyle(
-                                      fontSize: 16,
-                                      fontStyle: FontStyle.normal,
-                                      fontWeight: FontWeight.w300,
-                                      color: Color.fromRGBO(57, 55, 56, 0.5),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    disabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    isDense: true,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 18,
-                                    ),
-                                  ),
+                                  decoration:
+                                      myDecoration('Enter the House Name'),
                                 ),
                               ),
                             ],
@@ -970,56 +826,8 @@ class _GeneralDetailsState extends State<GeneralDetails> {
                                     color: Color.fromRGBO(57, 55, 56, 1),
                                   ),
                                   textAlign: TextAlign.start,
-                                  decoration: InputDecoration(
-                                    hintText: "Enter the House Number",
-                                    hintStyle: const TextStyle(
-                                      fontSize: 16,
-                                      fontStyle: FontStyle.normal,
-                                      fontWeight: FontWeight.w300,
-                                      color: Color.fromRGBO(57, 55, 56, 0.5),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    disabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    isDense: true,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 18,
-                                    ),
-                                  ),
+                                  decoration:
+                                      myDecoration('Enter the House Number'),
                                 ),
                               ),
                             ],
@@ -1070,56 +878,7 @@ class _GeneralDetailsState extends State<GeneralDetails> {
                                     color: Color.fromRGBO(57, 55, 56, 1),
                                   ),
                                   textAlign: TextAlign.start,
-                                  decoration: InputDecoration(
-                                    hintText: "Enter the Street",
-                                    hintStyle: const TextStyle(
-                                      fontSize: 16,
-                                      fontStyle: FontStyle.normal,
-                                      fontWeight: FontWeight.w300,
-                                      color: Color.fromRGBO(57, 55, 56, 0.5),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    disabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    isDense: true,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 18,
-                                    ),
-                                  ),
+                                  decoration: myDecoration('Enter the Street'),
                                 ),
                               ),
                             ],
@@ -1170,56 +929,8 @@ class _GeneralDetailsState extends State<GeneralDetails> {
                                     color: Color.fromRGBO(57, 55, 56, 1),
                                   ),
                                   textAlign: TextAlign.start,
-                                  decoration: InputDecoration(
-                                    hintText: "Enter the Locality",
-                                    hintStyle: const TextStyle(
-                                      fontSize: 16,
-                                      fontStyle: FontStyle.normal,
-                                      fontWeight: FontWeight.w300,
-                                      color: Color.fromRGBO(57, 55, 56, 0.5),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    disabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    isDense: true,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 18,
-                                    ),
-                                  ),
+                                  decoration:
+                                      myDecoration("Enter the Locality"),
                                 ),
                               ),
                             ],
@@ -1270,56 +981,7 @@ class _GeneralDetailsState extends State<GeneralDetails> {
                                     color: Color.fromRGBO(57, 55, 56, 1),
                                   ),
                                   textAlign: TextAlign.start,
-                                  decoration: InputDecoration(
-                                    hintText: "Enter the Town",
-                                    hintStyle: const TextStyle(
-                                      fontSize: 16,
-                                      fontStyle: FontStyle.normal,
-                                      fontWeight: FontWeight.w300,
-                                      color: Color.fromRGBO(57, 55, 56, 0.5),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    disabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    isDense: true,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 18,
-                                    ),
-                                  ),
+                                  decoration: myDecoration("Enter the Town"),
                                 ),
                               ),
                             ],
@@ -1370,56 +1032,7 @@ class _GeneralDetailsState extends State<GeneralDetails> {
                                     color: Color.fromRGBO(57, 55, 56, 1),
                                   ),
                                   textAlign: TextAlign.start,
-                                  decoration: InputDecoration(
-                                    hintText: "Enter the Country",
-                                    hintStyle: const TextStyle(
-                                      fontSize: 16,
-                                      fontStyle: FontStyle.normal,
-                                      fontWeight: FontWeight.w300,
-                                      color: Color.fromRGBO(57, 55, 56, 0.5),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    disabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    isDense: true,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 18,
-                                    ),
-                                  ),
+                                  decoration: myDecoration("Enter the Country"),
                                 ),
                               ),
                             ],
@@ -1470,56 +1083,8 @@ class _GeneralDetailsState extends State<GeneralDetails> {
                                     color: Color.fromRGBO(57, 55, 56, 1),
                                   ),
                                   textAlign: TextAlign.start,
-                                  decoration: InputDecoration(
-                                    hintText: "Enter the Postcode",
-                                    hintStyle: const TextStyle(
-                                      fontSize: 16,
-                                      fontStyle: FontStyle.normal,
-                                      fontWeight: FontWeight.w300,
-                                      color: Color.fromRGBO(57, 55, 56, 0.5),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    disabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    isDense: true,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 18,
-                                    ),
-                                  ),
+                                  decoration:
+                                      myDecoration("Enter the Postcode"),
                                 ),
                               ),
                             ],
@@ -1786,6 +1351,59 @@ class _GeneralDetailsState extends State<GeneralDetails> {
         _dateController.text = picked.toString().split(" ")[0];
       });
     }
+  }
+
+  InputDecoration myDecoration(String hint) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: const TextStyle(
+        fontSize: 16,
+        fontStyle: FontStyle.normal,
+        fontWeight: FontWeight.w300,
+        color: Color.fromRGBO(57, 55, 56, 0.5),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(
+          16,
+        ),
+        borderSide: const BorderSide(
+          color: Color(0X19626262),
+          width: 2,
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(
+          16,
+        ),
+        borderSide: const BorderSide(
+          color: Color(0X19626262),
+          width: 2,
+        ),
+      ),
+      disabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(
+          16,
+        ),
+        borderSide: const BorderSide(
+          color: Color(0X19626262),
+          width: 2,
+        ),
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(
+          16,
+        ),
+        borderSide: const BorderSide(
+          color: Color(0X19626262),
+          width: 2,
+        ),
+      ),
+      isDense: true,
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 18,
+      ),
+    );
   }
 
   void _showImageSourceSelection() {

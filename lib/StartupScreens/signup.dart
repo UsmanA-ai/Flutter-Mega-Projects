@@ -449,7 +449,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class SignupScreen extends StatefulWidget {
-  SignupScreen({Key? key}) : super(key: key);
+  const SignupScreen({super.key});
 
   @override
   State<SignupScreen> createState() => _SignupScreen();
@@ -729,7 +729,7 @@ class _SignupScreen extends State<SignupScreen> {
                       ),
                       onPressed: _signUp,
                       child: const Text(
-                        "Sign up",
+                        "Sign Up",
                         style: TextStyle(
                           color: Color(0XFFFFFFFF),
                           fontSize: 16,

@@ -5,10 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class SignInScreen extends StatefulWidget {
-  SignInScreen({Key? key})
-      : super(
-          key: key,
-        );
+  const SignInScreen({super.key});
 
   @override
   State<SignInScreen> createState() => _SignInScreen();
@@ -20,13 +17,19 @@ class _SignInScreen extends State<SignInScreen> {
   TextEditingController passwordController = TextEditingController();
   var _isObscured = true;
 
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
   // Function to handle Firebase sign-in
   Future<void> _signIn() async {
     if (_formKey.currentState!.validate()) {
       try {
         // Sign in using Firebase Auth
-        UserCredential userCredential =
-            await FirebaseAuth.instance.signInWithEmailAndPassword(
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: emailController.text.trim(),
           password: passwordController.text.trim(),
         );
@@ -72,6 +75,7 @@ class _SignInScreen extends State<SignInScreen> {
                       height: 74.2,
                       child: SvgPicture.asset(
                         "assets/images/logo-svg.svg",
+                        
                         color: const Color.fromRGBO(92, 148, 155, 1),
                       ),
                     ),
@@ -355,7 +359,7 @@ class _SignInScreen extends State<SignInScreen> {
                       ),
                       onPressed: _signIn,
                       child: const Text(
-                        "Sign Up",
+                        "Log In",
                         style: TextStyle(
                           color: Color(0XFFFFFFFF),
                           fontSize: 16,
@@ -454,7 +458,7 @@ class _SignInScreen extends State<SignInScreen> {
                         height: 10,
                       ),
                       const Text(
-                        "Already have an account?",
+                        "I don't have an account?",
                         style: TextStyle(
                           color: Color(0XFF393738),
                           fontSize: 16,
@@ -470,7 +474,7 @@ class _SignInScreen extends State<SignInScreen> {
                             );
                           },
                           child: const Text(
-                            "Login",
+                            "Sign Up",
                             style: TextStyle(
                               color: Color.fromRGBO(37, 144, 240, 1),
                               fontSize: 16,

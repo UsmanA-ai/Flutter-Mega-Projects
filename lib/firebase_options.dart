@@ -33,7 +33,10 @@ class DefaultFirebaseOptions {
           'you can reconfigure this by running the FlutterFire CLI again.',
         );
       case TargetPlatform.windows:
-        return windows;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for windows - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -47,30 +50,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCeF6OghFFqPlGS0CXb_9XZfgkFFucx0uw',
-    appId: '1:382464457642:web:cb711f0aa01e7d71ac49d3',
-    messagingSenderId: '382464457642',
-    projectId: 'condition-report-go-92d23',
-    authDomain: 'condition-report-go-92d23.firebaseapp.com',
-    storageBucket: 'condition-report-go-92d23.appspot.com',
-    measurementId: 'G-GLWJ51RS3R',
+    apiKey: 'AIzaSyBSORfPKLolrW9ML73yfyIC2crLeqtG8Ls',
+    appId: '1:240481845821:web:00409dc08ab13dd450a054',
+    messagingSenderId: '240481845821',
+    projectId: 'condition-report-go-16e6e',
+    authDomain: 'condition-report-go-16e6e.firebaseapp.com',
+    storageBucket: 'condition-report-go-16e6e.firebasestorage.app',
+    measurementId: 'G-97110CMQQ6',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDKsnpeT8zJCo3QuQge92G-bIiRYiZ4LRc',
-    appId: '1:382464457642:android:f9bc32cfce1aa6caac49d3',
-    messagingSenderId: '382464457642',
-    projectId: 'condition-report-go-92d23',
-    storageBucket: 'condition-report-go-92d23.appspot.com',
-  );
-
-  static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyCeF6OghFFqPlGS0CXb_9XZfgkFFucx0uw',
-    appId: '1:382464457642:web:71a9caf6b653049aac49d3',
-    messagingSenderId: '382464457642',
-    projectId: 'condition-report-go-92d23',
-    authDomain: 'condition-report-go-92d23.firebaseapp.com',
-    storageBucket: 'condition-report-go-92d23.appspot.com',
-    measurementId: 'G-L5STZC2CQE',
+    apiKey: 'AIzaSyAwojCShQQYi2G9PdwGvqIeTPLWIll-dQU',
+    appId: '1:240481845821:android:30d4f4cec728a73c50a054',
+    messagingSenderId: '240481845821',
+    projectId: 'condition-report-go-16e6e',
+    storageBucket: 'condition-report-go-16e6e.firebasestorage.app',
   );
 }

@@ -1,8 +1,7 @@
-// import 'package:condition_report/Screens/condition_report.dart';
 import 'package:condition_report/StartupScreens/splashscreen.dart';
+import 'package:condition_report/firebase_options.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart'; // Import Firebase core
-import 'firebase_options.dart'; // Import the generated options file
+import 'package:firebase_core/firebase_core.dart'; 
 
 // Just A Comment For Testing!!!
 void main() async {

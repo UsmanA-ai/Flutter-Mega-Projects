@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:condition_report/Screens/condition_report.dart';
 import 'package:condition_report/Screens/select_selection.dart';
 import 'package:flutter/cupertino.dart';
