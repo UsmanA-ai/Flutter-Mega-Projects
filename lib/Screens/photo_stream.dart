@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:condition_report/Screens/condition_report.dart';
 import 'package:condition_report/Screens/select_selection.dart';
+import 'package:condition_report/services/supabase_services.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class PhotoStreamScreen extends StatefulWidget {
@@ -10,10 +14,10 @@ class PhotoStreamScreen extends StatefulWidget {
   final List<DateTime> imageDates;
 
   const PhotoStreamScreen({
-    Key? key,
+    super.key,
     required this.imagePaths, // Update to List<String>
     required this.imageDates,
-  }) : super(key: key);
+  });
 
   @override
   State<PhotoStreamScreen> createState() => _PhotoStreamScreenState();
@@ -29,6 +33,39 @@ class _PhotoStreamScreenState extends State<PhotoStreamScreen> {
     // Add the list of images passed from the previous screen
     imagePathList.addAll(widget.imagePaths);
     imageDateList.addAll(widget.imageDates);
+  }
+
+  void _showImageSourceSelection() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: Icon(Icons.camera_alt),
+              title: Text('Take a Photo'),
+              onTap: () async {
+                final XFile? image;
+                Navigator.pop(context);
+                final ImagePicker picker = ImagePicker();
+                image = await picker.pickImage(source: ImageSource.camera);
+                // image =   SupabaseServices().pickImage(ImageSource.camera);
+                SupabaseServices().uploadImageToSupabase(context, image!.path);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.photo_album),
+              title: Text('Pick from Gallery'),
+              onTap: () {
+                Navigator.pop(context);
+                SupabaseServices().pickImage(ImageSource.gallery);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -180,6 +217,34 @@ class _PhotoStreamScreenState extends State<PhotoStreamScreen> {
                         );
                       }).toList()
                     : const [Center(child: Text("No images available"))],
+              ),
+            ),
+          ),
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.only(left: 32, right: 32, bottom: 20),
+        child: Container(
+          height: 60,
+          width: 364,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(100),
+          ),
+          child: FilledButton(
+            style: ButtonStyle(
+              backgroundColor: WidgetStateProperty.all<Color>(
+                const Color.fromRGBO(98, 98, 98, 1),
+              ),
+            ),
+            onPressed: () => _showImageSourceSelection(),
+            child: const Text(
+              "Upload Images",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                fontStyle: FontStyle.normal,
+                fontWeight: FontWeight.w600,
+                color: Color.fromRGBO(255, 255, 255, 1),
               ),
             ),
           ),

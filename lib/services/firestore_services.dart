@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:condition_report/models/general_details_model.dart';
 import 'package:condition_report/models/occupancy_model.dart';
@@ -10,111 +9,93 @@ class FireStoreServices {
   final _firebaseFirestore =
       FirebaseFirestore.instance.collection("assessment");
   final List<String> ids = [];
+
+  // Create a new assessment and return its ID
   Future<String> createAssessment() async {
     try {
       final docRef = _firebaseFirestore.doc(); // Generate a random document ID
       ids.add(docRef.id);
       currentId = docRef.id;
+      await docRef.set({
+        "generalDetails": {}, // Initialize empty maps for the fields
+        "propertyDetails": {},
+        "occupancy": {}
+      });
       return docRef.id; // Return the generated document ID
     } catch (e) {
       throw Exception(e.toString());
     }
   }
 
-  fetchAssessment() async {
-    // final data = await _firebaseFirestore
-    //     .doc("Rd9sf7kCx44W9EqIFuYy")
-    //     .collection("generalProperty")
-    //     .doc("EwySl30ivmNzl3cNmhmo")
-    //     .get();
-
-    // log(data.data().toString());
-    // return _firebaseFirestore
-    //     .doc("Rd9sf7kCx44W9EqIFuYy")
-    //     .collection("generalProperty")
-    //     .doc("EwySl30ivmNzl3cNmhmo")
-    //     .get();
-    final id = FirebaseFirestore.instance.collection("demo").snapshots().map((event) => event.docs);
-    log(id.toString());
-  }
-
-  Future<void> addPropertyDetails(PropertyDetailsModel data) async {
+  // Add General Details to the assessment
+  Future<void> addGeneralDetails(
+      String assessmentId, GeneralDetailsModel data) async {
     try {
-      await _firebaseFirestore
-          .doc(currentId)
-          .collection("propertyDetails")
-          .add(data.toMap());
+      log(currentId!);
+      await _firebaseFirestore.doc(assessmentId).update({
+        "generalDetails": data.toMap(), // Update the `generalDetails` field
+      });
+      log('General details added successfully');
     } catch (e) {
       throw Exception(e.toString());
     }
   }
 
-  Future<void> addGeneralDetails(GeneralDetailsModel data) async {
+  // Add Property Details to the assessment
+  Future<void> addPropertyDetails(
+      String assessmentId, PropertyDetailsModel data) async {
     try {
-      await _firebaseFirestore
-          .doc(currentId)
-          .collection("generalDetails")
-          .add(data.toMap());
+      await _firebaseFirestore.doc(assessmentId).update({
+        "propertyDetails": data.toMap(), // Update the `propertyDetails` field
+      });
+      log('Property details added successfully');
     } catch (e) {
       throw Exception(e.toString());
     }
   }
 
-  Future<void> addOccupancy(String assessmentId, OccupancyModel data) async {
+  // Add Occupancy Details to the assessment
+  Future<void> addOccupancyDetails(
+      String assessmentId, OccupancyModel data) async {
     try {
-      await _firebaseFirestore
-          .doc(assessmentId)
-          .collection("occupancy")
-          .add(data.toMap());
+      await _firebaseFirestore.doc(assessmentId).update({
+        "occupancy": data.toMap(), // Update the `occupancy` field
+      });
+      log('Occupancy details added successfully');
     } catch (e) {
       throw Exception(e.toString());
     }
   }
 
-  Future<List<PropertyDetailsModel>> fetchPropertyDetails(
-      String assessmentId) async {
+  // Fetch an assessment by its ID
+  Future<Map<String, dynamic>> fetchAssessment(String assessmentId) async {
     try {
-      final querySnapshot = await _firebaseFirestore
-          .doc(assessmentId)
-          .collection("propertyDetails")
-          .get();
-
-      return querySnapshot.docs
-          .map((doc) => PropertyDetailsModel.fromMap(doc.data()))
-          .toList();
+      final docSnapshot = await _firebaseFirestore.doc(assessmentId).get();
+      if (docSnapshot.exists) {
+        return docSnapshot.data()!;
+      } else {
+        throw Exception("Assessment not found");
+      }
     } catch (e) {
       throw Exception(e.toString());
     }
   }
 
-  Future<List<GeneralDetailsModel>> fetchGeneralDetails(
-      String assessmentId) async {
+  
+  Stream<QuerySnapshot<Map<String, dynamic>>> fetchAllAssessments() {
     try {
-      final querySnapshot = await _firebaseFirestore
-          .doc(assessmentId)
-          .collection("generalDetails")
-          .get();
-
-      return querySnapshot.docs
-          .map((doc) => GeneralDetailsModel.fromMap(doc.data()))
-          .toList();
+      return _firebaseFirestore.snapshots();
     } catch (e) {
       throw Exception(e.toString());
     }
   }
-
-  Future<List<OccupancyModel>> fetchOccupancy(String assessmentId) async {
+    // Delete an assessment by its ID
+  Future<void> deleteAssessment(String assessmentId) async {
     try {
-      final querySnapshot = await _firebaseFirestore
-          .doc(assessmentId)
-          .collection("occupancy")
-          .get();
-
-      return querySnapshot.docs
-          .map((doc) => OccupancyModel.fromMap(doc.data()))
-          .toList();
+      await _firebaseFirestore.doc(assessmentId).delete();
+      log('Assessment deleted successfully');
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception("Error deleting assessment: ${e.toString()}");
     }
   }
 }

@@ -1,5 +1,7 @@
 import 'package:condition_report/Screens/condition_report.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:condition_report/models/occupancy_model.dart';
+import 'package:condition_report/provider/assessment_provider.dart';
+import 'package:condition_report/services/firestore_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -11,14 +13,15 @@ class Occupancy extends StatefulWidget {
 }
 
 class _OccupancyState extends State<Occupancy> {
-  final TextEditingController _text1Controller = TextEditingController();
-  final TextEditingController _text2Controller = TextEditingController();
-  final TextEditingController _text3Controller = TextEditingController();
-  final TextEditingController _text4Controller = TextEditingController();
-  String? elementN1;
-  String? elementN2;
-  String? elementN3;
-  String? elementN4;
+  final TextEditingController _totalOccupantsController = TextEditingController();
+  final TextEditingController _childrenUnder18Controller = TextEditingController();
+  final TextEditingController _pensionableMemberController = TextEditingController();
+  final TextEditingController _specialConsiderationController = TextEditingController();
+  final TextEditingController _disableMemberController = TextEditingController();
+  // String? elementN1;
+  // String? elementN2;
+  // String? elementN3;
+  // String? elementN4;
 
   final formKey = GlobalKey<FormState>();
 
@@ -100,21 +103,75 @@ class _OccupancyState extends State<Occupancy> {
                 const Color.fromRGBO(98, 98, 98, 1),
               ),
             ),
-            onPressed: () {
+        onPressed: () async {
+              // Check if form is valid
               if (formKey.currentState!.validate()) {
                 formKey.currentState!.save();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Center(
-                      child: Text(
-                        "Element has been added!",
-                        style: TextStyle(color: Colors.black),
+
+                // Show the loading dialog
+                showDialog(
+                  context: context,
+                  barrierDismissible:
+                      false, // Prevent dismissing the dialog manually
+                  builder: (context) {
+                    return Dialog(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            CircularProgressIndicator(color: Colors.black),
+                            SizedBox(height: 15),
+                            Text("Uploading data..."),
+                          ],
+                        ),
                       ),
-                    ),
-                    backgroundColor: Colors.white,
-                    duration: Duration(seconds: 1),
-                  ),
+                    );
+                  },
                 );
+
+                try {
+                
+
+                  // Simulate a short delay to ensure the loading dialog is visible
+                  await Future.delayed(const Duration(milliseconds: 500));
+
+                  // Upload General Details to Firestore
+                  await FireStoreServices().addOccupancyDetails(currentId!,
+                    OccupancyModel(
+                      childrenUnder18: _childrenUnder18Controller.text.trim(),
+                      disabledMembers: _specialConsiderationController.text.trim(),
+                      pensionableMembers: _pensionableMemberController.text.trim(),
+                      totalOccupants: _totalOccupantsController.text.trim(),
+                      specialConsideration: _specialConsiderationController.text.trim(),
+                     
+                    ),
+                  );
+
+                  // Show success message
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Occupancy added!"),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                } catch (e) {
+                  // Show error message
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Error adding data: $e"),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                } finally {
+                  // Close the loading dialog
+                  Navigator.pop(context);
+                }
+
+               
+            
+              } else {
+                
               }
             },
             child: const Text(
@@ -182,13 +239,13 @@ class _OccupancyState extends State<Occupancy> {
                                     }
                                     return null; // Return null if input is valid
                                   },
-                                  controller: _text1Controller,
-                                  onChanged: (String value) {
-                                    // Track the input value
-                                    setState(() {
-                                      elementN1 = value;
-                                    });
-                                  },
+                                  controller: _totalOccupantsController,
+                                  // onChanged: (String value) {
+                                  //   // Track the input value
+                                  //   setState(() {
+                                  //     elementN1 = value;
+                                  //   });
+                                  // },
                                   style: const TextStyle(
                                     fontSize: 16,
                                     fontStyle: FontStyle.normal,
@@ -282,13 +339,13 @@ class _OccupancyState extends State<Occupancy> {
                                     }
                                     return null; // Return null if input is valid
                                   },
-                                  controller: _text2Controller,
-                                  onChanged: (String value) {
-                                    // Track the input value
-                                    setState(() {
-                                      elementN2 = value;
-                                    });
-                                  },
+                                  controller: _childrenUnder18Controller,
+                                  // onChanged: (String value) {
+                                  //   // Track the input value
+                                  //   setState(() {
+                                  //     elementN2 = value;
+                                  //   });
+                                  // },
                                   style: const TextStyle(
                                     fontSize: 16,
                                     fontStyle: FontStyle.normal,
@@ -382,13 +439,13 @@ class _OccupancyState extends State<Occupancy> {
                                     }
                                     return null; // Return null if input is valid
                                   },
-                                  controller: _text3Controller,
-                                  onChanged: (String value) {
-                                    // Track the input value
-                                    setState(() {
-                                      elementN3 = value;
-                                    });
-                                  },
+                                  controller: _pensionableMemberController,
+                                  // onChanged: (String value) {
+                                  //   // Track the input value
+                                  //   setState(() {
+                                  //     elementN3 = value;
+                                  //   });
+                                  // },
                                   style: const TextStyle(
                                     fontSize: 16,
                                     fontStyle: FontStyle.normal,
@@ -481,13 +538,13 @@ class _OccupancyState extends State<Occupancy> {
                                     }
                                     return null; // Return null if input is valid
                                   },
-                                  controller: _text4Controller,
-                                  onChanged: (String value) {
-                                    // Track the input value
-                                    setState(() {
-                                      elementN4 = value;
-                                    });
-                                  },
+                                  controller: _disableMemberController,
+                                  // onChanged: (String value) {
+                                  //   // Track the input value
+                                  //   setState(() {
+                                  //     elementN4 = value;
+                                  //   });
+                                  // },
                                   style: const TextStyle(
                                     fontSize: 16,
                                     fontStyle: FontStyle.normal,
@@ -558,7 +615,7 @@ class _OccupancyState extends State<Occupancy> {
                                 child: SizedBox(
                                   height: 24,
                                   width: 330,
-                                  child: Text("Special Considerations",
+                                  child: Text("Special Considerations (Optional)",
                                       textAlign: TextAlign.start,
                                       style: TextStyle(
                                         fontSize: 16,
@@ -568,45 +625,114 @@ class _OccupancyState extends State<Occupancy> {
                                 ),
                               ),
                               const SizedBox(height: 5),
-                              Container(
-                                constraints: const BoxConstraints(
-                                  minHeight:
-                                      100, // Default height of the container
-                                ),
-                                width: 364,
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    width: 2,
-                                    color:
-                                        const Color.fromRGBO(98, 98, 98, 0.1),
+                              TextFormField(
+                                maxLines: 3,
+                                
+                                  controller: _specialConsiderationController,
+                                  // onChanged: (String value) {
+                                  //   // Track the input value
+                                  //   setState(() {
+                                  //     elementN4 = value;
+                                  //   });
+                                  // },
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontStyle: FontStyle.normal,
+                                    fontWeight: FontWeight.w300,
+                                    color: Color.fromRGBO(57, 55, 56, 1),
                                   ),
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 17, right: 17, top: 10, bottom: 19),
-                                  child: CupertinoTextFormFieldRow(
-                                    textAlign: TextAlign.start,
-                                    maxLines: null, // Allows for multiple lines
-                                    keyboardType: TextInputType
-                                        .multiline, // Keyboard suited for multiline
-                                    placeholder: "If any! (optional)",
-                                    placeholderStyle: const TextStyle(
+                                  textAlign: TextAlign.start,
+                                  decoration: InputDecoration(
+                                    hintText:
+                                        "If any",
+                                    hintStyle: const TextStyle(
                                       fontSize: 16,
                                       fontStyle: FontStyle.normal,
                                       fontWeight: FontWeight.w300,
                                       color: Color.fromRGBO(57, 55, 56, 0.5),
                                     ),
-                                    padding: EdgeInsets.zero,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontStyle: FontStyle.normal,
-                                      fontWeight: FontWeight.w300,
-                                      color: Color.fromRGBO(57, 55, 56, 1),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(
+                                        16,
+                                      ),
+                                      borderSide: const BorderSide(
+                                        color: Color(0X19626262),
+                                        width: 2,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(
+                                        16,
+                                      ),
+                                      borderSide: const BorderSide(
+                                        color: Color(0X19626262),
+                                        width: 2,
+                                      ),
+                                    ),
+                                    disabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(
+                                        16,
+                                      ),
+                                      borderSide: const BorderSide(
+                                        color: Color(0X19626262),
+                                        width: 2,
+                                      ),
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(
+                                        16,
+                                      ),
+                                      borderSide: const BorderSide(
+                                        color: Color(0X19626262),
+                                        width: 2,
+                                      ),
+                                    ),
+                                    isDense: true,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 18,
                                     ),
                                   ),
                                 ),
-                              ),
+                              // Container(
+                              //   constraints: const BoxConstraints(
+                              //     minHeight:
+                              //         100, // Default height of the container
+                              //   ),
+                              //   width: 364,
+                              //   decoration: BoxDecoration(
+                              //     border: Border.all(
+                              //       width: 2,
+                              //       color:
+                              //           const Color.fromRGBO(98, 98, 98, 0.1),
+                              //     ),
+                              //     borderRadius: BorderRadius.circular(16),
+                              //   ),
+                              //   child: Padding(
+                              //     padding: const EdgeInsets.only(
+                              //         left: 17, right: 17, top: 10, bottom: 19),
+                              //     child: CupertinoTextFormFieldRow(
+                              //       textAlign: TextAlign.start,
+                              //       maxLines: null, // Allows for multiple lines
+                              //       keyboardType: TextInputType
+                              //           .multiline, // Keyboard suited for multiline
+                              //       placeholder: "If any! (optional)",
+                              //       placeholderStyle: const TextStyle(
+                              //         fontSize: 16,
+                              //         fontStyle: FontStyle.normal,
+                              //         fontWeight: FontWeight.w300,
+                              //         color: Color.fromRGBO(57, 55, 56, 0.5),
+                              //       ),
+                              //       padding: EdgeInsets.zero,
+                              //       style: const TextStyle(
+                              //         fontSize: 16,
+                              //         fontStyle: FontStyle.normal,
+                              //         fontWeight: FontWeight.w300,
+                              //         color: Color.fromRGBO(57, 55, 56, 1),
+                              //       ),
+                              //     ),
+                              //   ),
+                              // ),
                             ],
                           ),
                         ],

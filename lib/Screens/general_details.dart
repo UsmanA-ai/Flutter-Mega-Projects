@@ -1,11 +1,11 @@
 import 'dart:io';
-
 import 'package:condition_report/Screens/condition_report.dart';
 import 'package:condition_report/Screens/outstanding_photos..dart';
 import 'package:condition_report/Screens/photo_stream.dart';
 import 'package:condition_report/models/general_details_model.dart';
 import 'package:condition_report/provider/assessment_provider.dart';
 import 'package:condition_report/services/firestore_services.dart';
+import 'package:condition_report/services/supabase_services.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -67,22 +67,22 @@ class _GeneralDetailsState extends State<GeneralDetails> {
         imageDates.add(imageDateTime);
       });
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => OutstandingPhotos(imagePaths: imagePaths),
-        ),
-      );
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (context) => OutstandingPhotos(imagePaths: imagePaths),
+      //   ),
+      // );
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => PhotoStreamScreen(
-            imagePaths: imagePaths,
-            imageDates: imageDates,
-          ),
-        ),
-      );
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (context) => PhotoStreamScreen(
+      //       imagePaths: imagePaths,
+      //       imageDates: imageDates,
+      //     ),
+      //   ),
+      // );
     } catch (e) {
       print('Error picking or processing image: $e');
     }
@@ -182,9 +182,7 @@ class _GeneralDetailsState extends State<GeneralDetails> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: const [
-                            CircularProgressIndicator(
-                              color: Colors.black,
-                            ),
+                            CircularProgressIndicator(color: Colors.black),
                             SizedBox(height: 15),
                             Text("Uploading data..."),
                           ],
@@ -197,9 +195,11 @@ class _GeneralDetailsState extends State<GeneralDetails> {
                 try {
                   // Simulate a short delay to ensure the loading dialog is visible
                   await Future.delayed(const Duration(milliseconds: 500));
+                  SupabaseServices().uploadImagesToSupabase(context, imagePaths);
 
-                  // Upload data to Firebase
+                  // Upload General Details to Firestore
                   await FireStoreServices().addGeneralDetails(
+                    currentId!,
                     GeneralDetailsModel(
                       property: selectedProperty ?? "",
                       refNo: _refNoController.text.trim(),
@@ -219,24 +219,16 @@ class _GeneralDetailsState extends State<GeneralDetails> {
                   // Show success message
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text(
-                        "General Details added!",
-                        style: TextStyle(color: Colors.black),
-                      ),
+                      content: Text("General Details added!"),
                       backgroundColor: Colors.green,
-                      duration: Duration(seconds: 2),
                     ),
                   );
                 } catch (e) {
                   // Show error message
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(
-                        "Error adding data: $e",
-                        style: const TextStyle(color: Colors.black),
-                      ),
+                      content: Text("Error adding data: $e"),
                       backgroundColor: Colors.red,
-                      duration: const Duration(seconds: 2),
                     ),
                   );
                 } finally {
@@ -702,7 +694,7 @@ class _GeneralDetailsState extends State<GeneralDetails> {
                                     ),
                                   ),
                                 ),
-                                const SizedBox(width: 20),
+                                const SizedBox(width: 10),
                                 Expanded(
                                   child: GestureDetector(
                                     onTap: () {},

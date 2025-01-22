@@ -1,5 +1,4 @@
-import 'dart:developer';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:condition_report/Screens/condition_report.dart';
 import 'package:condition_report/services/firestore_services.dart';
 import 'package:flutter/material.dart';
@@ -14,53 +13,22 @@ class AssesmentsScreen extends StatefulWidget {
 
 class _AssesmentsScreenState extends State<AssesmentsScreen> {
   @override
-  void initState() {
-    super.initState();
-    FireStoreServices().fetchAssessment();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        toolbarOpacity: 0.32,
         backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
-        leading: Padding(
-          padding: const EdgeInsets.only(
-            left: 24,
-            // top: 20,
-            // bottom: 12,
-          ),
-          child: SizedBox(
-            height: 24,
-            width: 24,
-            child: IconButton(
-              padding: const EdgeInsets.all(0.0),
-              onPressed: () {},
-              icon: const Icon(
-                Icons.arrow_back_sharp,
-                size: 24,
-                color: Color.fromRGBO(57, 55, 56, 1),
-              ),
-            ),
-          ),
-        ),
-        title: const Center(
-          child: Text("Assessments",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 24,
-                fontStyle: FontStyle.normal,
-                color: Color.fromRGBO(57, 55, 56, 1),
-              )),
-        ),
+        title: Text("Assessments",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 24,
+              fontStyle: FontStyle.normal,
+              color: Color.fromRGBO(57, 55, 56, 1),
+            )),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(
-              right: 24,
-              // bottom: 12,
-            ),
+            padding: const EdgeInsets.only(right: 10),
             child: IconButton(
               onPressed: () {},
               icon: SvgPicture.asset(
@@ -76,15 +44,13 @@ class _AssesmentsScreenState extends State<AssesmentsScreen> {
         elevation: 0,
       ),
       body: SingleChildScrollView(
+        // Scrolls the entire body
         child: Column(
           children: [
             Container(
-              padding: const EdgeInsets.only(top: 1),
               color: const Color.fromRGBO(204, 204, 204, 1),
+              padding: const EdgeInsets.only(top: 1),
               child: Container(
-                height: 926,
-                // width: 428,
-                // width: double.infinity,
                 color: const Color.fromRGBO(253, 253, 253, 1),
                 child: Padding(
                   padding: const EdgeInsets.only(
@@ -96,7 +62,6 @@ class _AssesmentsScreenState extends State<AssesmentsScreen> {
                     children: [
                       const SizedBox(
                         height: 56,
-                        // width: 364,
                         child: TextField(
                           decoration: InputDecoration(
                             hintText: 'Search Assessments',
@@ -113,17 +78,13 @@ class _AssesmentsScreenState extends State<AssesmentsScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(
-                        height: 10,
-                      ),
+                      const SizedBox(height: 10),
                       SizedBox(
                         height: 54,
-                        // width: 400,
                         child: ElevatedButton(
                           style: ButtonStyle(
                             backgroundColor: WidgetStateProperty.all<Color>(
-                              const Color.fromRGBO(37, 144, 240, 1),
-                            ),
+                                const Color.fromRGBO(37, 144, 240, 1)),
                             shape:
                                 WidgetStateProperty.all<RoundedRectangleBorder>(
                               RoundedRectangleBorder(
@@ -136,8 +97,8 @@ class _AssesmentsScreenState extends State<AssesmentsScreen> {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                      const ConditionReport()),
+                                builder: (context) => const ConditionReport(),
+                              ),
                             );
                           },
                           child: Row(
@@ -181,34 +142,102 @@ class _AssesmentsScreenState extends State<AssesmentsScreen> {
                           ),
                         ),
                       ),
-                      // Expanded(
-                      //   child: FutureBuilder(
-                      //     future: FireStoreServices().fetchAssessment(),
-                      //     builder: (BuildContext context, snapshot) {
-                      //       if (snapshot.hasError) {
-                      //         throw Exception();
-                      //       }
-                      //       if (snapshot.connectionState ==
-                      //           ConnectionState.waiting) {
-                      //         return Center(
-                      //           child: CircularProgressIndicator(
-                      //             color: Colors.black,
-                      //           ),
-                      //         );
-                      //       }
-                      //       if (snapshot.hasData) {
-                      //         log(snapshot.data!.docs.length.toString());
-                      //         return ListView.builder(
-                      //           itemCount: FireStoreServices().ids.length,
-                      //           itemBuilder: (BuildContext context, int index) {
-                      //             return Text("data");
-                      //           },
-                      //         );
-                      //       }
-                      //       return SizedBox();
-                      //     },
-                      //   ),
-                      // )
+                      const SizedBox(height: 10),
+                      // Now we can allow ListView to take the remaining space
+                      StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                        stream: FireStoreServices().fetchAllAssessments(),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>
+                                snapshot) {
+                          if (snapshot.hasError) {
+                            return Center(
+                              child: Text('Error: ${snapshot.error}'),
+                            );
+                          }
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Center(
+                              child: CircularProgressIndicator(
+                                color: Colors.black,
+                              ),
+                            );
+                          }
+                          if (snapshot.hasData) {
+                            final assessments = snapshot
+                                .data!.docs; // Get documents from snapshot
+
+                            return ListView.builder(
+                              shrinkWrap:
+                                  true, // Makes the ListView behave correctly within Column
+                              physics:
+                                  NeverScrollableScrollPhysics(), // Prevent scroll conflict with parent SingleChildScrollView
+                              itemCount: assessments.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                final assessment = assessments[index]
+                                    .data(); // Get the data of the document
+                                final refNo = assessment['generalDetails']
+                                        ['country'] ??
+                                    'blank_assessment';
+
+                                return GestureDetector(
+                                  onLongPress: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        backgroundColor: Colors.white,
+                                        title: Text(
+                                            "Are you sure you want to delete"),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            child: Text(
+                                              "Cancel",
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            ),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              FireStoreServices()
+                                                  .deleteAssessment(snapshot
+                                                      .data!.docs[index].id);
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text(
+                                              "Ok",
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.all(16.0),
+                                    margin: EdgeInsets.symmetric(vertical: 8.0),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: Colors.grey, width: 0.5),
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    child: Text(
+                                      refNo,
+                                      style: TextStyle(
+                                        fontSize: 12.0,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          }
+                          return SizedBox(); // Return an empty box if no data
+                        },
+                      )
                     ],
                   ),
                 ),

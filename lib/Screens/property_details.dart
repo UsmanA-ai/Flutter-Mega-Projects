@@ -1,5 +1,6 @@
 import 'package:condition_report/Screens/condition_report.dart';
 import 'package:condition_report/models/property_details_model.dart';
+import 'package:condition_report/provider/assessment_provider.dart';
 import 'package:condition_report/services/firestore_services.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
@@ -197,7 +198,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                               color: Colors.black,
                             ),
                             SizedBox(height: 15),
-                            Text("Uploading Property details..."),
+                            Text("Uploading data..."),
                           ],
                         ),
                       ),
@@ -211,7 +212,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
 
                   // Create a new assessment and get its ID
                   // Upload property details to Firebase
-                  await FireStoreServices().addPropertyDetails(
+                  await FireStoreServices().addPropertyDetails(currentId!,
                     PropertyDetailsModel(
                       buildingOrientation:
                           _buildingOrientationController.text.trim(),
