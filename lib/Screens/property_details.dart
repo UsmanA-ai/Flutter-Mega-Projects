@@ -1,6 +1,7 @@
 import 'package:condition_report/Screens/condition_report.dart';
+import 'package:condition_report/models/property_details_model.dart';
+import 'package:condition_report/services/firestore_services.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -13,14 +14,16 @@ class PropertyDetails extends StatefulWidget {
 
 class _PropertyDetailsState extends State<PropertyDetails> {
   String? elementName1;
-  final TextEditingController _text1Controller = TextEditingController();
+  final TextEditingController _propertyContstraintController =
+      TextEditingController();
   String? elementName2;
-  final TextEditingController _text2Controller = TextEditingController();
+  final TextEditingController _buildingOrientationController =
+      TextEditingController();
   bool isAdded = false;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  String? button1;
+  String? selectedPropertyDetachment;
   final List<String> items = ['Semi-Detachment', 'Detachment', 'Item 3'];
-  String? button2;
+  String? selectedExposureZone;
   final List<String> items2 = ['Item 1', 'Item 2', 'Item 3'];
 
   int selectedTag = -1;
@@ -147,32 +150,128 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                 const Color.fromRGBO(98, 98, 98, 1),
               ),
             ),
-            onPressed: () {
+            // onPressed: () {
+            //   if (formKey.currentState!.validate()) {
+            //     formKey.currentState!.save();
+            //     ScaffoldMessenger.of(context).showSnackBar(
+            //       const SnackBar(
+            //         content: Center(
+            //           child: Text(
+            //             "Element has been added!",
+            //             style: TextStyle(color: Colors.black),
+            //           ),
+            //         ),
+            //         backgroundColor: Colors.white,
+            //         duration: Duration(seconds: 1),
+            //       ),
+            //     );
+
+            //     // Update the state locally
+            //     setState(() {
+            //       isAdded = true; // Update the button state to "Added"
+            //     });
+            //   }
+            //   setState(() {
+            //     showErrorMessages =
+            //         true; // Show validation messages when submitting
+            //   });
+            // },
+            onPressed: () async {
+              // Check if form is valid
               if (formKey.currentState!.validate()) {
                 formKey.currentState!.save();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Center(
-                      child: Text(
-                        "Element has been added!",
-                        style: TextStyle(color: Colors.black),
+
+                // Show the loading dialog
+                showDialog(
+                  context: context,
+                  barrierDismissible:
+                      false, // Prevent dismissing the dialog manually
+                  builder: (context) {
+                    return Dialog(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            CircularProgressIndicator(
+                              color: Colors.black,
+                            ),
+                            SizedBox(height: 15),
+                            Text("Uploading Property details..."),
+                          ],
+                        ),
                       ),
-                    ),
-                    backgroundColor: Colors.white,
-                    duration: Duration(seconds: 1),
-                  ),
+                    );
+                  },
                 );
 
-                // Update the state locally
+                try {
+                  // Simulate a short delay to ensure the loading dialog is visible
+                  await Future.delayed(const Duration(milliseconds: 500));
+
+                  // Create a new assessment and get its ID
+                  // Upload property details to Firebase
+                  await FireStoreServices().addPropertyDetails(
+                    PropertyDetailsModel(
+                      buildingOrientation:
+                          _buildingOrientationController.text.trim(),
+                      exposureZone: selectedExposureZone ?? "",
+                      propertyConstraint:
+                          _propertyContstraintController.text.trim(),
+                      propertyConstruction: options[selectedTag],
+                      propertyDetachment: selectedPropertyDetachment ?? "",
+                    ),
+                  );
+
+                  // Show success message
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        "Property details added successfully!",
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      backgroundColor: Colors.green,
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                } catch (e) {
+                  // Show error message if something goes wrong
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        "Error adding property details: $e",
+                        style: const TextStyle(color: Colors.black),
+                      ),
+                      backgroundColor: Colors.red,
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
+                } finally {
+                  // Close the loading dialog
+                  Navigator.pop(context);
+                }
+
+                // Update the button state to reflect success
                 setState(() {
-                  isAdded = true; // Update the button state to "Added"
+                  isAdded = true;
+                });
+                setState(() {
+                  showErrorMessages =
+                      true; // Show validation messages when submitting
+                });
+              } else {
+                // If form has errors, keep the "Add" button unchanged
+                setState(() {
+                  isAdded = false;
                 });
               }
+
+              // Show validation error messages if needed
               setState(() {
-                showErrorMessages =
-                    true; // Show validation messages when submitting
+                showErrorMessages = true;
               });
             },
+
             child: const Text(
               "Submit",
               textAlign: TextAlign.center,
@@ -240,7 +339,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                     }
                                     return null; // Return null if input is valid
                                   },
-                                  controller: _text1Controller,
+                                  controller: _propertyContstraintController,
                                   onChanged: (String value) {
                                     // Track the input value
                                     setState(() {
@@ -346,7 +445,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                   decoration: InputDecoration(
                                     hintText: selectedTag == -1
                                         ? "No option selected"
-                                        : "${options[selectedTag]} selected",
+                                        : options[selectedTag],
                                     hintStyle: const TextStyle(
                                       fontSize: 16,
                                       fontStyle: FontStyle.normal,
@@ -541,7 +640,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                         borderRadius: BorderRadius.circular(16),
                                       ),
                                     ),
-                                    value: button1,
+                                    value: selectedPropertyDetachment,
                                     hint: const Text(
                                       "Select the Property Detachment",
                                       textAlign: TextAlign.center,
@@ -564,7 +663,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                     }).toList(),
                                     onChanged: (value) {
                                       setState(() {
-                                        button1 = value;
+                                        selectedPropertyDetachment = value;
                                       });
                                     },
                                   ),
@@ -601,11 +700,11 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                   validator: (String? value) {
                                     // Validator for form field
                                     if (value == null || value.isEmpty) {
-                                      return 'Please enter Reference Number'; // Return error message
+                                      return 'Please enter Building Orientation'; // Return error message
                                     }
                                     return null; // Return null if input is valid
                                   },
-                                  controller: _text2Controller,
+                                  controller: _buildingOrientationController,
                                   onChanged: (String value) {
                                     // Track the input value
                                     setState(() {
@@ -776,7 +875,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                             57, 55, 56, 0.5),
                                       ),
                                     ),
-                                    value: button2,
+                                    value: selectedExposureZone,
                                     items: items2.map((item) {
                                       return DropdownMenuItem<String>(
                                         alignment: Alignment.centerLeft,
@@ -786,7 +885,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                     }).toList(),
                                     onChanged: (value) {
                                       setState(() {
-                                        button2 = value;
+                                        selectedExposureZone = value;
                                       });
                                     },
                                   ),

@@ -6,16 +6,12 @@ import 'package:condition_report/Screens/outstanding_photos..dart';
 import 'package:condition_report/Screens/photo_stream.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:condition_report/Screens/globals.dart';
-import 'package:image/image.dart' as img;
-import 'package:path_provider/path_provider.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:image_picker/image_picker.dart';
 
 class Bedroom1 extends StatefulWidget {
   const Bedroom1({super.key});
@@ -42,7 +38,7 @@ class _Bedroom1State extends State<Bedroom1> {
   }
 
   String? selectedImagePath;
-  DateTime _imageDateTime = DateTime.now();
+  // DateTime _imageDateTime = DateTime.now();
 
   List<String> camera1Images = [];
   List<String> camera2Images = [];

@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:condition_report/Screens/condition_report.dart';
+import 'package:condition_report/services/firestore_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -10,6 +13,12 @@ class AssesmentsScreen extends StatefulWidget {
 }
 
 class _AssesmentsScreenState extends State<AssesmentsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    FireStoreServices().fetchAssessment();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -123,6 +132,7 @@ class _AssesmentsScreenState extends State<AssesmentsScreen> {
                             ),
                           ),
                           onPressed: () {
+                            FireStoreServices().createAssessment();
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
@@ -170,7 +180,35 @@ class _AssesmentsScreenState extends State<AssesmentsScreen> {
                             ],
                           ),
                         ),
-                      )
+                      ),
+                      // Expanded(
+                      //   child: FutureBuilder(
+                      //     future: FireStoreServices().fetchAssessment(),
+                      //     builder: (BuildContext context, snapshot) {
+                      //       if (snapshot.hasError) {
+                      //         throw Exception();
+                      //       }
+                      //       if (snapshot.connectionState ==
+                      //           ConnectionState.waiting) {
+                      //         return Center(
+                      //           child: CircularProgressIndicator(
+                      //             color: Colors.black,
+                      //           ),
+                      //         );
+                      //       }
+                      //       if (snapshot.hasData) {
+                      //         log(snapshot.data!.docs.length.toString());
+                      //         return ListView.builder(
+                      //           itemCount: FireStoreServices().ids.length,
+                      //           itemBuilder: (BuildContext context, int index) {
+                      //             return Text("data");
+                      //           },
+                      //         );
+                      //       }
+                      //       return SizedBox();
+                      //     },
+                      //   ),
+                      // )
                     ],
                   ),
                 ),
