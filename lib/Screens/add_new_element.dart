@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:condition_report/Screens/condition_report.dart';
 import 'package:condition_report/Screens/outstanding_photos..dart';
 import 'package:condition_report/Screens/photo_stream.dart';
+import 'package:condition_report/services/firestore_services.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -21,19 +22,24 @@ class AddNewElement extends StatefulWidget {
 }
 
 class _AddNewElementState extends State<AddNewElement> {
-  final TextEditingController _textController = TextEditingController();
+  final TextEditingController elementNameController = TextEditingController();
+  final TextEditingController conditionSummaryController =
+      TextEditingController();
+  final TextEditingController addNotesController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
   String barTitle = "New Element";
   @override
   void initState() {
     super.initState();
-    _textController.addListener(() => setState(() => barTitle =
-        _textController.text.isEmpty ? "New Element" : _textController.text));
+    elementNameController.addListener(() => setState(() => barTitle =
+        elementNameController.text.isEmpty
+            ? "New Element"
+            : elementNameController.text));
   }
 
   @override
   void dispose() {
-    _textController.dispose();
+    elementNameController.dispose();
     super.dispose();
   }
 
@@ -129,9 +135,9 @@ class _AddNewElementState extends State<AddNewElement> {
         context,
         MaterialPageRoute(
           builder: (context) => PhotoStreamScreen(
-            // imagePaths: imagePaths,
-            // imageDates: imageDates,
-          ),
+              // imagePaths: imagePaths,
+              // imageDates: imageDates,
+              ),
         ),
       );
       setState(() {});
@@ -254,121 +260,125 @@ class _AddNewElementState extends State<AddNewElement> {
             onPressed: () {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Center(
-                      child: Text(
-                        "Element has been added!",
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ),
-                    backgroundColor: Colors.white,
-                    duration: Duration(seconds: 1),
-                  ),
-                );
-                Timer(const Duration(seconds: 2), () {
-                  globalButtons.add(
-                    Column(
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const AddNewElement()),
-                            );
-                          },
-                          child: Container(
-                            width: 364,
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                top: BorderSide(
-                                  width: 0,
-                                  color: Color.fromRGBO(253, 253, 253, 1),
-                                ),
-                                bottom: BorderSide(
-                                  width: 0,
-                                  color: Color.fromRGBO(253, 253, 253, 1),
-                                ),
-                              ),
-                            ),
-                            child: CupertinoFormRow(
-                              padding: EdgeInsets.zero,
-                              prefix: Row(
-                                children: [
-                                  Stack(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(13.5),
-                                        child: SvgPicture.asset(
-                                          "assets/images/attachment.svg",
-                                          height: 24,
-                                          width: 24,
-                                          color: const Color.fromRGBO(
-                                              37, 144, 240, 1),
-                                        ),
-                                      ),
-                                      SvgPicture.asset(
-                                        "assets/images/Group 1259.svg",
-                                        height: 50.5,
-                                        width: 50,
-                                        color: const Color.fromRGBO(
-                                            37, 144, 240, 1),
-                                        // color: Colors.red,
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(width: 20),
-                                  Text(
-                                    barTitle,
-                                    style: const TextStyle(
-                                        fontSize: 16,
-                                        fontStyle: FontStyle.normal,
-                                        fontWeight: FontWeight.w400,
-                                        color: Color.fromRGBO(57, 55, 56, 1)),
-                                  ),
-                                ],
-                              ),
-                              child: Container(
-                                width: 56,
-                                height: 24,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(6.2),
-                                  color: const Color.fromRGBO(37, 144, 240, 1),
-                                ),
-                                child: CupertinoButton(
-                                  padding: const EdgeInsets.all(0),
-                                  onPressed: () {},
-                                  child: const SizedBox(
-                                    height: 17,
-                                    child: Text(
-                                      "Added",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color: Color.fromRGBO(255, 255, 255, 1),
-                                        fontSize: 14,
-                                        fontStyle: FontStyle.normal,
-                                        fontWeight: FontWeight.w300,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                      ],
-                    ),
-                  );
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const ConditionReport()),
-                  );
-                });
+
+                FireStoreServices()
+                    .createNewElement(elementNameController.text.trim());
+
+                // ScaffoldMessenger.of(context).showSnackBar(
+                //   const SnackBar(
+                //     content: Center(
+                //       child: Text(
+                //         "Element has been added!",
+                //         style: TextStyle(color: Colors.black),
+                //       ),
+                //     ),
+                //     backgroundColor: Colors.white,
+                //     duration: Duration(seconds: 1),
+                //   ),
+                // );
+                // Timer(const Duration(seconds: 2), () {
+                //   globalButtons.add(
+                //     Column(
+                //       children: [
+                //         GestureDetector(
+                //           onTap: () {
+                //             Navigator.pushReplacement(
+                //               context,
+                //               MaterialPageRoute(
+                //                   builder: (context) => const AddNewElement()),
+                //             );
+                //           },
+                //           child: Container(
+                //             width: 364,
+                //             decoration: const BoxDecoration(
+                //               border: Border(
+                //                 top: BorderSide(
+                //                   width: 0,
+                //                   color: Color.fromRGBO(253, 253, 253, 1),
+                //                 ),
+                //                 bottom: BorderSide(
+                //                   width: 0,
+                //                   color: Color.fromRGBO(253, 253, 253, 1),
+                //                 ),
+                //               ),
+                //             ),
+                //             child: CupertinoFormRow(
+                //               padding: EdgeInsets.zero,
+                //               prefix: Row(
+                //                 children: [
+                //                   Stack(
+                //                     children: [
+                //                       Padding(
+                //                         padding: const EdgeInsets.all(13.5),
+                //                         child: SvgPicture.asset(
+                //                           "assets/images/attachment.svg",
+                //                           height: 24,
+                //                           width: 24,
+                //                           color: const Color.fromRGBO(
+                //                               37, 144, 240, 1),
+                //                         ),
+                //                       ),
+                //                       SvgPicture.asset(
+                //                         "assets/images/Group 1259.svg",
+                //                         height: 50.5,
+                //                         width: 50,
+                //                         color: const Color.fromRGBO(
+                //                             37, 144, 240, 1),
+                //                         // color: Colors.red,
+                //                       ),
+                //                     ],
+                //                   ),
+                //                   const SizedBox(width: 20),
+                //                   Text(
+                //                     barTitle,
+                //                     style: const TextStyle(
+                //                         fontSize: 16,
+                //                         fontStyle: FontStyle.normal,
+                //                         fontWeight: FontWeight.w400,
+                //                         color: Color.fromRGBO(57, 55, 56, 1)),
+                //                   ),
+                //                 ],
+                //               ),
+                //               child: Container(
+                //                 width: 56,
+                //                 height: 24,
+                //                 decoration: BoxDecoration(
+                //                   borderRadius: BorderRadius.circular(6.2),
+                //                   color: const Color.fromRGBO(37, 144, 240, 1),
+                //                 ),
+                //                 child: CupertinoButton(
+                //                   padding: const EdgeInsets.all(0),
+                //                   onPressed: () {},
+                //                   child: const SizedBox(
+                //                     height: 17,
+                //                     child: Text(
+                //                       "Added",
+                //                       textAlign: TextAlign.center,
+                //                       style: TextStyle(
+                //                         color: Color.fromRGBO(255, 255, 255, 1),
+                //                         fontSize: 14,
+                //                         fontStyle: FontStyle.normal,
+                //                         fontWeight: FontWeight.w300,
+                //                       ),
+                //                     ),
+                //                   ),
+                //                 ),
+                //               ),
+                //             ),
+                //           ),
+                //         ),
+                //         const SizedBox(
+                //           height: 10,
+                //         ),
+                //       ],
+                //     ),
+                //   );
+                //   Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //         builder: (context) => const ConditionReport()),
+                //   );
+                // });
               }
             },
             child: const Text(
@@ -668,7 +678,7 @@ class _AddNewElementState extends State<AddNewElement> {
                                 width: 364,
                                 child: Center(
                                   child: TextFormField(
-                                    controller: _textController,
+                                    controller: elementNameController,
                                     autovalidateMode:
                                         AutovalidateMode.onUserInteraction,
                                     validator: (String? value) {

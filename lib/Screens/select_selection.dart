@@ -18,7 +18,7 @@ class _SelectSelctionScreenState extends State<SelectSelctionScreen> {
   List<String> imagePaths = [];
   List<DateTime> imageDates = [];
   String? button;
-  List<String> dropdownItemList = ["One", "Two", "Three"];
+  List<String> dropdownItemList = ["General Details", "Two", "Three"];
   String? button1;
   List<String> dropdownItemList1 = ["Item One", "Item Two", "Item Three"];
 

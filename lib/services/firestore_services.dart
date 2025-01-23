@@ -26,6 +26,19 @@ class FireStoreServices {
       throw Exception(e.toString());
     }
   }
+  
+  Future<String> createNewElement(String elementName) async {
+    try {
+      final docRef = _firebaseFirestore.doc(currentId); // Generate a random document ID
+      // ids.add(docRef.id);
+      await docRef.set({
+        elementName: {}
+      });
+      return docRef.id; // Return the generated document ID
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
 
   // Add General Details to the assessment
   Future<void> addGeneralDetails(
