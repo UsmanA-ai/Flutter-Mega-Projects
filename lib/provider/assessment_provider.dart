@@ -10,3 +10,6 @@ class AssessmentProvider extends ChangeNotifier {
 }
 
 String? currentId;
+bool isAddedGD = false;
+bool isAddedPD = false;
+bool isAddedO = false;

@@ -4,6 +4,7 @@ class PropertyDetailsModel {
   String propertyDetachment;
   String buildingOrientation;
   String exposureZone;
+  bool isAdded;
 
   PropertyDetailsModel({
     required this.propertyConstraint,
@@ -11,6 +12,7 @@ class PropertyDetailsModel {
     required this.propertyDetachment,
     required this.buildingOrientation,
     required this.exposureZone,
+    required this.isAdded,
   });
 
   // Convert PropertyDetailsModel to a Map
@@ -21,6 +23,7 @@ class PropertyDetailsModel {
       'propertyDetachment': propertyDetachment,
       'buildingOrientation': buildingOrientation,
       'exposureZone': exposureZone,
+      "isAdded": isAdded,
     };
   }
 
@@ -32,6 +35,7 @@ class PropertyDetailsModel {
       propertyDetachment: map['propertyDetachment'] ?? '',
       buildingOrientation: map['buildingOrientation'] ?? '',
       exposureZone: map['exposureZone'] ?? '',
+      isAdded: map["isAdded"] ?? false,
     );
   }
 }

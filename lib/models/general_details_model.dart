@@ -11,6 +11,8 @@ class GeneralDetailsModel {
   String postCode;
   String date;
   String property;
+  String riskAssessment;
+  bool isAdded;
 
   GeneralDetailsModel({
     required this.refNo,
@@ -25,6 +27,8 @@ class GeneralDetailsModel {
     required this.postCode,
     required this.date,
     required this.property,
+    required this.riskAssessment,
+    required this.isAdded,
   });
 
   // Convert GeneralDetailsModel to a Map
@@ -42,13 +46,15 @@ class GeneralDetailsModel {
       'postCode': postCode,
       'date': date,
       "property": property,
+      "riskAssessment": riskAssessment,
+      "isAdded": isAdded,
     };
   }
 
   // Create GeneralDetailsModel from a Map
   factory GeneralDetailsModel.fromMap(Map<String, dynamic> map) {
     return GeneralDetailsModel(
-    
+      riskAssessment: map["riskAssessment"] ?? "",
       refNo: map['refNo'] ?? '',
       myRef: map['myRef'] ?? '',
       region: map['region'] ?? '',
@@ -61,6 +67,7 @@ class GeneralDetailsModel {
       postCode: map['postCode'] ?? '',
       date: map['date'] ?? '',
       property: map['property'] ?? '',
+      isAdded: map["isAdded"] ?? false,
     );
   }
 }

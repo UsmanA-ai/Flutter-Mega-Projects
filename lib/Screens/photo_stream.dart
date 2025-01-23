@@ -1,22 +1,23 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:condition_report/Screens/condition_report.dart';
 import 'package:condition_report/Screens/select_selection.dart';
-import 'package:condition_report/services/supabase_services.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:condition_report/common_widgets/submit_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PhotoStreamScreen extends StatefulWidget {
-  final List<String> imagePaths; // Change to List<String> for multiple paths
-  final List<DateTime> imageDates;
+  // final List<String> imagePaths;
+  // final List<DateTime> imageDates;
 
   const PhotoStreamScreen({
     super.key,
-    required this.imagePaths, // Update to List<String>
-    required this.imageDates,
+    // required this.imagePaths,
+    // required this.imageDates,
   });
 
   @override
@@ -24,15 +25,54 @@ class PhotoStreamScreen extends StatefulWidget {
 }
 
 class _PhotoStreamScreenState extends State<PhotoStreamScreen> {
-  List<String> imagePathList = [];
-  List<DateTime> imageDateList = [];
+  final SupabaseClient _supabaseClient = Supabase.instance.client;
+  final List<String> _imageUrls = [];
+  bool _isLoading = false; // Added loading state
 
   @override
   void initState() {
     super.initState();
-    // Add the list of images passed from the previous screen
-    imagePathList.addAll(widget.imagePaths);
-    imageDateList.addAll(widget.imageDates);
+    _fetchImages();
+  }
+
+  Future<void> _fetchImages() async {
+    setState(() {
+      _isLoading = true; // Show loading indicator
+    });
+
+    try {
+      final response =
+          await _supabaseClient.storage.from('Images').list(path: 'images');
+
+      if (response.isEmpty) {
+        log("No images found in Supabase storage.");
+        setState(() {
+          _isLoading = false; // Hide loading indicator
+        });
+        return;
+      }
+
+      final List<String> urls = [];
+      for (var file in response) {
+        log("Found file: ${file.name}");
+        final url = _supabaseClient.storage
+            .from('Images')
+            .getPublicUrl('images/${file.name}');
+        log("Generated URL: $url");
+        urls.add(url);
+      }
+
+      setState(() {
+        _imageUrls.clear();
+        _imageUrls.addAll(urls);
+        _isLoading = false; // Hide loading indicator
+      });
+    } catch (e) {
+      log("Error fetching images: $e");
+      setState(() {
+        _isLoading = false; // Hide loading indicator
+      });
+    }
   }
 
   void _showImageSourceSelection() {
@@ -46,20 +86,28 @@ class _PhotoStreamScreenState extends State<PhotoStreamScreen> {
               leading: Icon(Icons.camera_alt),
               title: Text('Take a Photo'),
               onTap: () async {
-                final XFile? image;
                 Navigator.pop(context);
                 final ImagePicker picker = ImagePicker();
-                image = await picker.pickImage(source: ImageSource.camera);
-                // image =   SupabaseServices().pickImage(ImageSource.camera);
-                SupabaseServices().uploadImageToSupabase(context, image!.path);
+                final XFile? image =
+                    await picker.pickImage(source: ImageSource.camera);
+
+                if (image != null) {
+                  await _uploadImageToSupabase(image);
+                }
               },
             ),
             ListTile(
               leading: Icon(Icons.photo_album),
               title: Text('Pick from Gallery'),
-              onTap: () {
+              onTap: () async {
                 Navigator.pop(context);
-                SupabaseServices().pickImage(ImageSource.gallery);
+                final ImagePicker picker = ImagePicker();
+                final XFile? image =
+                    await picker.pickImage(source: ImageSource.gallery);
+
+                if (image != null) {
+                  await _uploadImageToSupabase(image);
+                }
               },
             ),
           ],
@@ -68,19 +116,38 @@ class _PhotoStreamScreenState extends State<PhotoStreamScreen> {
     );
   }
 
+  Future<void> _uploadImageToSupabase(XFile image) async {
+    try {
+      final fileName = DateTime.now().millisecondsSinceEpoch.toString();
+      final path = 'images/$fileName.jpg';
+
+      final fileBytes = await File(image.path).readAsBytes();
+      await _supabaseClient.storage.from('Images').uploadBinary(path, fileBytes,
+          fileOptions: const FileOptions(upsert: false));
+
+      final publicUrl =
+          _supabaseClient.storage.from('Images').getPublicUrl(path);
+
+      setState(() {
+        _imageUrls.add(publicUrl);
+      });
+
+      log('Image uploaded and public URL added: $publicUrl');
+    } catch (e) {
+      log('Error uploading image: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         centerTitle: true,
         elevation: 0,
         backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
         leading: Padding(
-          padding: const EdgeInsets.only(
-            left: 24,
-            top: 20,
-            bottom: 12,
-          ),
+          padding: const EdgeInsets.only(left: 24, top: 20, bottom: 12),
           child: SizedBox(
             height: 24,
             width: 24,
@@ -93,11 +160,8 @@ class _PhotoStreamScreenState extends State<PhotoStreamScreen> {
                       builder: (context) => const ConditionReport()),
                 );
               },
-              icon: SvgPicture.asset(
-                "assets/images/Icon (2).svg",
-                height: 24,
-                width: 24,
-              ),
+              icon: SvgPicture.asset("assets/images/Icon (2).svg",
+                  height: 24, width: 24),
             ),
           ),
         ),
@@ -107,148 +171,121 @@ class _PhotoStreamScreenState extends State<PhotoStreamScreen> {
             "Photo Stream",
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 24,
-              fontStyle: FontStyle.normal,
-              color: Color.fromRGBO(57, 55, 56, 1),
-            ),
+                fontWeight: FontWeight.w600,
+                fontSize: 24,
+                color: Color.fromRGBO(57, 55, 56, 1)),
           ),
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(
-              right: 24,
-            ),
+            padding: const EdgeInsets.only(right: 24),
             child: IconButton(
               padding: const EdgeInsets.all(0.0),
               color: const Color.fromRGBO(57, 55, 56, 1),
               onPressed: () {},
-              icon: Image.asset(
-                "assets/images/Filters (1).png",
-                scale: 1.0,
-              ),
+              icon: Image.asset("assets/images/Filters (1).png", scale: 1.0),
             ),
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          color: const Color.fromRGBO(204, 204, 204, 1),
-          child: Container(
-            height: MediaQuery.of(context).size.height - 160, // Adjusted height
-            color: const Color.fromRGBO(253, 253, 253, 1),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
-              child: Column(
-                children: imagePathList.isNotEmpty
-                    ? imagePathList.asMap().entries.map<Widget>((entry) {
-                        int index = entry.key;
-                        String imagePath = entry.value;
-                        DateTime imageDate = imageDateList[index];
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(
+              color: Colors.black,
+            ))
+          : _imageUrls.isNotEmpty
+              ? ListView.builder(
+                  padding: const EdgeInsets.all(8.0),
+                  itemCount: _imageUrls.length,
+                  itemBuilder: (context, index) {
+                    final imageDate = DateTime.now();
+                    final formattedDate =
+                        DateFormat('dd/MM/yyyy').format(imageDate);
 
-                        // Format the date and time
-                        String formattedDate =
-                            DateFormat('dd/MM/yyyy').format(imageDate);
-                        String formattedTime =
-                            DateFormat('HH:mm').format(imageDate);
-
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => SelectSelctionScreen(),
+                    return ListTile(
+                      leading: Container(
+                        height: 48,
+                        width: 48,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: _imageUrls[index].isEmpty
+                            ? Icon(
+                                Icons.image, // Default icon while loading
+                                size: 48,
+                                color: Colors.grey,
+                              )
+                            : ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.network(
+                                  _imageUrls[index],
+                                  fit: BoxFit.cover,
+                                  loadingBuilder: (BuildContext context,
+                                      Widget child,
+                                      ImageChunkEvent? loadingProgress) {
+                                    if (loadingProgress == null) {
+                                      return child; // Display the image when loaded
+                                    }
+                                    return Center(
+                                      child: Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          CircularProgressIndicator(
+                                            value: loadingProgress
+                                                        .expectedTotalBytes !=
+                                                    null
+                                                ? loadingProgress
+                                                        .cumulativeBytesLoaded /
+                                                    (loadingProgress
+                                                            .expectedTotalBytes ??
+                                                        1)
+                                                : null,
+                                            color: Colors
+                                                .black, // You can customize the color
+                                          ),
+                                          Text(
+                                            loadingProgress
+                                                        .expectedTotalBytes !=
+                                                    null
+                                                ? '${((loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1)) * 100).toStringAsFixed(0)}%' // Calculate percentage
+                                                : '0%', // Fallback
+                                            style: const TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Icon(
+                                      Icons
+                                          .error, // Show error icon if loading fails
+                                      size: 48,
+                                      color: Colors.red,
+                                    );
+                                  },
+                                ),
                               ),
-                            );
-                          },
-                          child: CupertinoFormRow(
-                            padding: EdgeInsets.zero,
-                            prefix: Row(
-                              children: [
-                                Container(
-                                  height: 48,
-                                  width: 48,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(2.75),
-                                      // image: DecorationImage(
-                                      //   image: FadeInImage(
-                                      //     placeholder: AssetImage(
-                                      //         "assets/images/placeholder.png"),
-                                      //     image: NetworkImage(imagePath),
-                                      //     fit: BoxFit.cover,
-                                      //   ).image,
-                                      //   fit: BoxFit.cover,
-                                      // ),
-                                      image: DecorationImage(
-                                        image: NetworkImage(imagePath),
-                                        fit: BoxFit.cover,
-                                      )),
-                                ),
-                                const SizedBox(width: 12),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                      "General Image",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400,
-                                        color: Color.fromRGBO(57, 55, 56, 1),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 5),
-                                    Text(
-                                      "$formattedDate ; $formattedTime",
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        color: Color.fromRGBO(57, 55, 56, 0.5),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            child: SvgPicture.asset(
-                              "assets/images/RightArrow.svg",
-                              height: 16,
-                              width: 16,
-                            ),
-                          ),
+                      ),
+                      title: const Text('Image'),
+                      subtitle: Text(formattedDate),
+                      trailing: const Icon(Icons.arrow_forward),
+                      onTap: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => SelectSelctionScreen()),
                         );
-                      }).toList()
-                    : const [Center(child: Text("No images available"))],
-              ),
-            ),
-          ),
-        ),
-      ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(left: 32, right: 32, bottom: 20),
-        child: Container(
-          height: 60,
-          width: 364,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(100),
-          ),
-          child: FilledButton(
-            style: ButtonStyle(
-              backgroundColor: WidgetStateProperty.all<Color>(
-                const Color.fromRGBO(98, 98, 98, 1),
-              ),
-            ),
-            onPressed: () => _showImageSourceSelection(),
-            child: const Text(
-              "Upload Images",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 16,
-                fontStyle: FontStyle.normal,
-                fontWeight: FontWeight.w600,
-                color: Color.fromRGBO(255, 255, 255, 1),
-              ),
-            ),
-          ),
-        ),
+                      },
+                    );
+                  },
+                )
+              : const Center(child: Text("No images available")),
+      bottomNavigationBar: SubmitButton(
+        onPressed: _showImageSourceSelection,
+        text: "Upload a Picture",
       ),
     );
   }

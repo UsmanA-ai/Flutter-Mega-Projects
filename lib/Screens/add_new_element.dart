@@ -13,14 +13,14 @@ import 'package:condition_report/Screens/globals.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class Bedroom1 extends StatefulWidget {
-  const Bedroom1({super.key});
+class AddNewElement extends StatefulWidget {
+  const AddNewElement({super.key});
 
   @override
-  State<Bedroom1> createState() => _Bedroom1State();
+  State<AddNewElement> createState() => _AddNewElementState();
 }
 
-class _Bedroom1State extends State<Bedroom1> {
+class _AddNewElementState extends State<AddNewElement> {
   final TextEditingController _textController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
   String barTitle = "New Element";
@@ -85,8 +85,8 @@ class _Bedroom1State extends State<Bedroom1> {
       });
 
       // Upload the image to Firebase Storage
-      final FirebaseStorage _storage = FirebaseStorage.instance;
-      final Reference ref = _storage
+      final FirebaseStorage storage = FirebaseStorage.instance;
+      final Reference ref = storage
           .ref()
           .child('images/${DateTime.now().millisecondsSinceEpoch}.jpg');
       await ref.putFile(File(photo.path));
@@ -129,8 +129,8 @@ class _Bedroom1State extends State<Bedroom1> {
         context,
         MaterialPageRoute(
           builder: (context) => PhotoStreamScreen(
-            imagePaths: imagePaths,
-            imageDates: imageDates,
+            // imagePaths: imagePaths,
+            // imageDates: imageDates,
           ),
         ),
       );
@@ -206,32 +206,6 @@ class _Bedroom1State extends State<Bedroom1> {
         centerTitle: true,
         elevation: 0,
         backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
-        leading: Padding(
-          padding: const EdgeInsets.only(
-            left: 24,
-            top: 20,
-            bottom: 12,
-          ),
-          child: SizedBox(
-            height: 24,
-            width: 24,
-            child: IconButton(
-              padding: const EdgeInsets.all(0.0),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const ConditionReport()),
-                );
-              },
-              icon: SvgPicture.asset(
-                "assets/images/Icon (2).svg",
-                height: 24,
-                width: 24,
-              ),
-            ),
-          ),
-        ),
         title: Padding(
           padding: EdgeInsets.only(top: 20, bottom: 12),
           child: Text(
@@ -301,7 +275,7 @@ class _Bedroom1State extends State<Bedroom1> {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const Bedroom1()),
+                                  builder: (context) => const AddNewElement()),
                             );
                           },
                           child: Container(

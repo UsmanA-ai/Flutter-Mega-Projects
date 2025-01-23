@@ -11,7 +11,10 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   ); // Initialize Firebase with the correct options
-  await Supabase.initialize(url: "https://fsprbrmiiwpmdezweozy.supabase.co", anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzcHJicm1paXdwbWRlendlb3p5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc1MzcyNDgsImV4cCI6MjA1MzExMzI0OH0.Bw6WX6mbAyOAfRtjrCcOb0ioK9rsh8noA6EcaC_4ONg");
+  await Supabase.initialize(
+      url: "https://fsprbrmiiwpmdezweozy.supabase.co",
+      anonKey:
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzcHJicm1paXdwbWRlendlb3p5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc1MzcyNDgsImV4cCI6MjA1MzExMzI0OH0.Bw6WX6mbAyOAfRtjrCcOb0ioK9rsh8noA6EcaC_4ONg");
   runApp(const MyApp());
 }
 
@@ -20,13 +23,69 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: "Condition Report Go",
       debugShowCheckedModeBanner: false,
       // This is your signup screen
       home: AssesmentsScreen(),
       // home: Splashscreen(),
       // home: ConditionReport(),
+      theme: ThemeData(
+          inputDecorationTheme: InputDecorationTheme(
+        labelStyle: TextStyle(
+          fontSize: 16,
+          fontStyle: FontStyle.normal,
+          fontWeight: FontWeight.w300,
+          color: Color.fromRGBO(57, 55, 56, 1),
+        ),
+        hintStyle: const TextStyle(
+          fontSize: 16,
+          fontStyle: FontStyle.normal,
+          fontWeight: FontWeight.w300,
+          color: Color.fromRGBO(57, 55, 56, 0.5),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(
+            16,
+          ),
+          borderSide: const BorderSide(
+            color: Color(0X19626262),
+            width: 2,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(
+            16,
+          ),
+          borderSide: const BorderSide(
+            color: Color(0X19626262),
+            width: 2,
+          ),
+        ),
+        disabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(
+            16,
+          ),
+          borderSide: const BorderSide(
+            color: Color(0X19626262),
+            width: 2,
+          ),
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(
+            16,
+          ),
+          borderSide: const BorderSide(
+            color: Color(0X19626262),
+            width: 2,
+          ),
+        ),
+        isDense: true,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 18,
+        ),
+      )),
     );
   }
 }

@@ -47,8 +47,8 @@ class _SelectSelctionScreenState extends State<SelectSelctionScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => PhotoStreamScreen(
-                      imagePaths: imagePaths,
-                      imageDates: imageDates,
+                      // imagePaths: imagePaths,
+                      // imageDates: imageDates,
                     ),
                   ),
                 );

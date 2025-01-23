@@ -1,26 +1,81 @@
-import 'package:condition_report/Screens/bedroom1.dart';
+import 'dart:developer';
+import 'package:condition_report/Screens/add_new_element.dart';
 import 'package:condition_report/Screens/general_details.dart';
 import 'package:condition_report/Screens/occupancy.dart';
 import 'package:condition_report/Screens/outstanding_photos..dart';
 import 'package:condition_report/Screens/photo_stream.dart';
 import 'package:condition_report/Screens/property_details.dart';
-import 'package:condition_report/MainScreens/navigationbar.dart';
+import 'package:condition_report/common_widgets/submit_button.dart';
+import 'package:condition_report/provider/assessment_provider.dart';
+import 'package:condition_report/services/firestore_services.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:condition_report/Screens/globals.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ConditionReport extends StatefulWidget {
-  const ConditionReport({super.key});
+  final String? assessmentId;
+  const ConditionReport({super.key, this.assessmentId});
 
   @override
   State<ConditionReport> createState() => _ConditionReportState();
 }
 
 class _ConditionReportState extends State<ConditionReport> {
-  List<String> imagePaths = [];
-  List<DateTime> imageDates = [];
-  bool isAdded = false;
+  // List<String> imageLength = [];
+  // List<DateTime> imageDates = [];
+  final SupabaseClient _supabaseClient = Supabase.instance.client;
+  final List<String> _imageUrls = [];
+// Added loading state
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchImages();
+    // setState(() {});
+    // log("initstate");
+  }
+
+  Future<void> _fetchImages() async {
+    setState(() {
+// Show loading indicator
+    });
+
+    try {
+      final response =
+          await _supabaseClient.storage.from('Images').list(path: 'images');
+
+      if (response.isEmpty) {
+        log("No images found in Supabase storage.");
+        setState(() {
+// Hide loading indicator
+        });
+        return;
+      }
+
+      final List<String> urls = [];
+      for (var file in response) {
+        log("Found file: ${file.name}");
+        final url = _supabaseClient.storage
+            .from('Images')
+            .getPublicUrl('images/${file.name}');
+        log("Generated URL: $url");
+        urls.add(url);
+      }
+
+      setState(() {
+        _imageUrls.clear();
+        _imageUrls.addAll(urls);
+// Hide loading indicator
+      });
+    } catch (e) {
+      log("Error fetching images: $e");
+      setState(() {
+// Hide loading indicator
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,32 +84,6 @@ class _ConditionReportState extends State<ConditionReport> {
         centerTitle: true,
         elevation: 0,
         backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
-        leading: Padding(
-          padding: const EdgeInsets.only(
-            left: 24,
-            top: 20,
-            bottom: 12,
-          ),
-          child: SizedBox(
-            height: 24,
-            width: 24,
-            child: IconButton(
-              padding: const EdgeInsets.all(0.0),
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const Navigationbar()),
-                );
-              },
-              icon: SvgPicture.asset(
-                "assets/images/Icon (2).svg",
-                height: 24,
-                width: 24,
-              ),
-            ),
-          ),
-        ),
         title: const Padding(
           padding: EdgeInsets.only(top: 20, bottom: 12),
           child: Text(
@@ -68,43 +97,10 @@ class _ConditionReportState extends State<ConditionReport> {
             ),
           ),
         ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 24, top: 20, bottom: 12),
-            child: SizedBox(
-              width: 60,
-              child: Container(),
-            ),
-          )
-        ],
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(left: 32, right: 32, bottom: 20),
-        child: Container(
-          height: 60,
-          width: 364,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(100),
-          ),
-          child: FilledButton(
-            style: ButtonStyle(
-              backgroundColor: WidgetStateProperty.all<Color>(
-                const Color.fromRGBO(98, 98, 98, 1),
-              ),
-            ),
-            onPressed: () {},
-            child: const Text(
-              "Submit",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 16,
-                fontStyle: FontStyle.normal,
-                fontWeight: FontWeight.w600,
-                color: Color.fromRGBO(255, 255, 255, 1),
-              ),
-            ),
-          ),
-        ),
+      bottomNavigationBar: SubmitButton(
+        text: "Submit",
+        onPressed: () {},
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -143,10 +139,10 @@ class _ConditionReportState extends State<ConditionReport> {
                           color: const Color.fromRGBO(37, 144, 240, 1),
                           padding: EdgeInsets.zero,
                           onPressed: () {
-                            Navigator.pushReplacement(
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const Bedroom1()),
+                                  builder: (context) => const AddNewElement()),
                             );
                           },
                           child: SizedBox(
@@ -209,9 +205,9 @@ class _ConditionReportState extends State<ConditionReport> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => PhotoStreamScreen(
-                                imagePaths: imagePaths,
-                                imageDates: imageDates,
-                              ),
+                                  // imagePaths: imagePaths,
+                                  // imageDates: imageDates,
+                                  ),
                             ),
                           );
                         },
@@ -252,7 +248,7 @@ class _ConditionReportState extends State<ConditionReport> {
                                   ],
                                 ),
                                 const SizedBox(width: 20),
-                                const Row(
+                                Row(
                                   children: [
                                     Text(
                                       "Photo Stream ",
@@ -263,7 +259,7 @@ class _ConditionReportState extends State<ConditionReport> {
                                           color: Color.fromRGBO(57, 55, 56, 1)),
                                     ),
                                     Text(
-                                      "(07)",
+                                      "(${_imageUrls.length})",
                                       style: TextStyle(
                                           fontSize: 16,
                                           fontStyle: FontStyle.normal,
@@ -283,7 +279,9 @@ class _ConditionReportState extends State<ConditionReport> {
                                   color: const Color.fromRGBO(37, 144, 240, 1),
                                 ),
                                 borderRadius: BorderRadius.circular(6.2),
-                                color: const Color.fromRGBO(37, 144, 240, 0.1),
+                                color: _imageUrls.isEmpty
+                                    ? Color.fromRGBO(37, 144, 240, 0.1)
+                                    : Color.fromRGBO(37, 144, 240, 1),
                               ),
                               child: CupertinoButton(
                                 padding: const EdgeInsets.all(0),
@@ -291,24 +289,26 @@ class _ConditionReportState extends State<ConditionReport> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    SvgPicture.asset(
-                                      "assets/images/Group 1353.svg",
-                                      height: 10,
-                                      width: 10,
-                                      color:
-                                          const Color.fromRGBO(37, 144, 240, 1),
-                                    ),
+                                    if (_imageUrls.isEmpty)
+                                      SvgPicture.asset(
+                                        "assets/images/Group 1353.svg",
+                                        height: 10,
+                                        width: 10,
+                                        color: const Color.fromRGBO(
+                                            37, 144, 240, 1),
+                                      ),
                                     const SizedBox(
                                       width: 5,
                                     ),
-                                    const SizedBox(
+                                    SizedBox(
                                       height: 17,
                                       child: Text(
-                                        "Add",
+                                        _imageUrls.isEmpty ? "Add" : "Added",
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
-                                          color:
-                                              Color.fromRGBO(37, 144, 240, 1),
+                                          color: _imageUrls.isEmpty
+                                              ? Color.fromRGBO(37, 144, 240, 1)
+                                              : Colors.white,
                                           fontSize: 14,
                                           fontStyle: FontStyle.normal,
                                           fontWeight: FontWeight.w300,
@@ -438,12 +438,47 @@ class _ConditionReportState extends State<ConditionReport> {
                         height: 10,
                       ),
                       GestureDetector(
-                        onTap: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const GeneralDetails()),
-                          );
+                        onTap: () async {
+                          try {
+                            Map<String, dynamic>? assessmentData;
+
+                            if (widget.assessmentId != null) {
+                              try {
+                                // Fetch data only if assessmentId is not null
+                                assessmentData = await FireStoreServices()
+                                    .fetchAssessment(widget.assessmentId!);
+                                log('Fetched assessment data: $assessmentData');
+                              } catch (e) {
+                                log('Error fetching assessment data: $e');
+                                // Handle fetching errors if necessary
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Error fetching data: $e'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                                return;
+                              }
+                            } else {
+                              log('Creating new assessment: No initial data available');
+                            }
+
+                            // Navigate to the Occupancy screen with existing data or empty values
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => GeneralDetails(
+                                  initialData:
+                                      assessmentData?['generalDetails'] ??
+                                          {}, // Pass empty map if null
+                                ),
+                              ),
+                            );
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Error loading data: $e")),
+                            );
+                          }
                         },
                         child: Container(
                           width: 364,
@@ -481,7 +516,6 @@ class _ConditionReportState extends State<ConditionReport> {
                                       width: 50,
                                       color:
                                           const Color.fromRGBO(37, 144, 240, 1),
-                                      // color: Colors.red,
                                     ),
                                   ],
                                 ),
@@ -489,57 +523,83 @@ class _ConditionReportState extends State<ConditionReport> {
                                 const Text(
                                   "General Details",
                                   style: TextStyle(
-                                      fontSize: 16,
-                                      fontStyle: FontStyle.normal,
-                                      fontWeight: FontWeight.w400,
-                                      color: Color.fromRGBO(57, 55, 56, 1)),
+                                    fontSize: 16,
+                                    fontStyle: FontStyle.normal,
+                                    fontWeight: FontWeight.w400,
+                                    color: Color.fromRGBO(57, 55, 56, 1),
+                                  ),
                                 ),
                               ],
                             ),
-                            child: Container(
-                              width: 56,
-                              height: 24,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: const Color.fromRGBO(37, 144, 240, 1),
-                                ),
-                                borderRadius: BorderRadius.circular(6.2),
-                                color: const Color.fromRGBO(37, 144, 240, 0.1),
-                              ),
-                              child: CupertinoButton(
-                                padding: const EdgeInsets.all(0),
-                                onPressed: () {},
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SvgPicture.asset(
-                                      "assets/images/Group 1353.svg",
-                                      height: 10,
-                                      width: 10,
-                                      color:
-                                          const Color.fromRGBO(37, 144, 240, 1),
+                            child: isAddedGD
+                                ? Container(
+                                    width: 56,
+                                    height: 24,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: Color.fromRGBO(37, 144, 240,
+                                            1), // "Added" state color
+                                      ),
+                                      borderRadius: BorderRadius.circular(6.2),
+                                      color: Color.fromRGBO(37, 144, 240,
+                                          1), // "Added" state color
                                     ),
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
-                                    const SizedBox(
-                                      height: 17,
-                                      child: Text(
-                                        "Add",
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          color:
-                                              Color.fromRGBO(37, 144, 240, 1),
-                                          fontSize: 14,
-                                          fontStyle: FontStyle.normal,
-                                          fontWeight: FontWeight.w300,
-                                        ),
+                                    child: Text(
+                                      "Added",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                        fontStyle: FontStyle.normal,
+                                        fontWeight: FontWeight.w300,
                                       ),
                                     ),
-                                  ],
-                                ),
-                              ),
-                            ),
+                                  )
+                                : Container(
+                                    width: 56,
+                                    height: 24,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: const Color.fromRGBO(
+                                            37, 144, 240, 1), // Blue border
+                                      ),
+                                      borderRadius: BorderRadius.circular(6.2),
+                                      color: const Color.fromRGBO(
+                                          37, 144, 240, 0.1), // Blue background
+                                    ),
+                                    child: CupertinoButton(
+                                      padding: const EdgeInsets.all(0),
+                                      onPressed: () {},
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          SvgPicture.asset(
+                                            "assets/images/Group 1353.svg", // Replace with your add icon
+                                            height: 10,
+                                            width: 10,
+                                            color: const Color.fromRGBO(
+                                                37, 144, 240, 1), // Blue color
+                                          ),
+                                          const SizedBox(width: 5),
+                                          const SizedBox(
+                                            height: 17,
+                                            child: Text(
+                                              "Add",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                color: Color.fromRGBO(37, 144,
+                                                    240, 1), // Blue text
+                                                fontSize: 14,
+                                                fontStyle: FontStyle.normal,
+                                                fontWeight: FontWeight.w300,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
                           ),
                         ),
                       ),
@@ -547,12 +607,47 @@ class _ConditionReportState extends State<ConditionReport> {
                         height: 10,
                       ),
                       GestureDetector(
-                        onTap: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const PropertyDetails()),
-                          );
+                        onTap: () async {
+                          try {
+                            Map<String, dynamic>? assessmentData;
+
+                            if (widget.assessmentId != null) {
+                              try {
+                                // Fetch data only if assessmentId is not null
+                                assessmentData = await FireStoreServices()
+                                    .fetchAssessment(widget.assessmentId!);
+                                log('Fetched assessment data: $assessmentData');
+                              } catch (e) {
+                                log('Error fetching assessment data: $e');
+                                // Handle fetching errors if necessary
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Error fetching data: $e'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                                return;
+                              }
+                            } else {
+                              log('Creating new assessment: No initial data available');
+                            }
+
+                            // Navigate to the Occupancy screen with existing data or empty values
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PropertyDetails(
+                                  initialData:
+                                      assessmentData?['propertyDetails'] ??
+                                          {}, // Pass empty map if null
+                                ),
+                              ),
+                            );
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Error loading data: $e")),
+                            );
+                          }
                         },
                         child: Container(
                           width: 364,
@@ -692,7 +787,7 @@ class _ConditionReportState extends State<ConditionReport> {
                                   color: const Color.fromRGBO(37, 144, 240, 1),
                                 ),
                                 borderRadius: BorderRadius.circular(6.2),
-                                color: isAdded
+                                color: isAddedPD
                                     ? const Color.fromRGBO(
                                         37, 144, 240, 1) // "Added" state color
                                     : const Color.fromRGBO(37, 144, 240,
@@ -723,7 +818,7 @@ class _ConditionReportState extends State<ConditionReport> {
                                 //     print("No item added.");
                                 //   }
                                 // },
-                                child: isAdded
+                                child: isAddedPD
                                     ? const SizedBox(
                                         height: 17,
                                         child: Text(
@@ -775,12 +870,46 @@ class _ConditionReportState extends State<ConditionReport> {
                         height: 10,
                       ),
                       GestureDetector(
-                        onTap: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const Occupancy()),
-                          );
+                        onTap: () async {
+                          try {
+                            Map<String, dynamic>? assessmentData;
+
+                            if (widget.assessmentId != null) {
+                              try {
+                                // Fetch data only if assessmentId is not null
+                                assessmentData = await FireStoreServices()
+                                    .fetchAssessment(widget.assessmentId!);
+                                log('Fetched assessment data: $assessmentData');
+                              } catch (e) {
+                                log('Error fetching assessment data: $e');
+                                // Handle fetching errors if necessary
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Error fetching data: $e'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                                return;
+                              }
+                            } else {
+                              log('Creating new assessment: No initial data available');
+                            }
+
+                            // Navigate to the Occupancy screen with existing data or empty values
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Occupancy(
+                                  initialData: assessmentData?['occupancy'] ??
+                                      {}, // Pass empty map if null
+                                ),
+                              ),
+                            );
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Error loading data: $e")),
+                            );
+                          }
                         },
                         child: Container(
                           width: 364,
@@ -833,50 +962,75 @@ class _ConditionReportState extends State<ConditionReport> {
                                 ),
                               ],
                             ),
-                            child: Container(
-                              width: 56,
-                              height: 24,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: const Color.fromRGBO(37, 144, 240, 1),
-                                ),
-                                borderRadius: BorderRadius.circular(6.2),
-                                color: const Color.fromRGBO(37, 144, 240, 0.1),
-                              ),
-                              child: CupertinoButton(
-                                padding: const EdgeInsets.all(0),
-                                onPressed: () {},
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SvgPicture.asset(
-                                      "assets/images/Group 1353.svg",
-                                      height: 10,
-                                      width: 10,
-                                      color:
-                                          const Color.fromRGBO(37, 144, 240, 1),
+                            child: isAddedO
+                                ? Container(
+                                    width: 56,
+                                    height: 24,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: Color.fromRGBO(37, 144, 240,
+                                            1), // "Added" state color
+                                      ),
+                                      borderRadius: BorderRadius.circular(6.2),
+                                      color: Color.fromRGBO(37, 144, 240,
+                                          1), // "Added" state color
                                     ),
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
-                                    const SizedBox(
-                                      height: 17,
-                                      child: Text(
-                                        "Add",
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          color:
-                                              Color.fromRGBO(37, 144, 240, 1),
-                                          fontSize: 14,
-                                          fontStyle: FontStyle.normal,
-                                          fontWeight: FontWeight.w300,
-                                        ),
+                                    child: Text(
+                                      "Added",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                        fontStyle: FontStyle.normal,
+                                        fontWeight: FontWeight.w300,
                                       ),
                                     ),
-                                  ],
-                                ),
-                              ),
-                            ),
+                                  )
+                                : Container(
+                                    width: 56,
+                                    height: 24,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: const Color.fromRGBO(
+                                            37, 144, 240, 1), // Blue border
+                                      ),
+                                      borderRadius: BorderRadius.circular(6.2),
+                                      color: const Color.fromRGBO(
+                                          37, 144, 240, 0.1), // Blue background
+                                    ),
+                                    child: CupertinoButton(
+                                      padding: const EdgeInsets.all(0),
+                                      onPressed: () {},
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          SvgPicture.asset(
+                                            "assets/images/Group 1353.svg", // Replace with your add icon
+                                            height: 10,
+                                            width: 10,
+                                            color: const Color.fromRGBO(
+                                                37, 144, 240, 1), // Blue color
+                                          ),
+                                          const SizedBox(width: 5),
+                                          const SizedBox(
+                                            height: 17,
+                                            child: Text(
+                                              "Add",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                color: Color.fromRGBO(37, 144,
+                                                    240, 1), // Blue text
+                                                fontSize: 14,
+                                                fontStyle: FontStyle.normal,
+                                                fontWeight: FontWeight.w300,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
                           ),
                         ),
                       ),

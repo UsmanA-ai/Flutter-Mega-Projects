@@ -1,69 +1,84 @@
 import 'package:condition_report/Screens/condition_report.dart';
+import 'package:condition_report/common_widgets/field_heading.dart';
+import 'package:condition_report/common_widgets/loading_dialog.dart';
+import 'package:condition_report/common_widgets/submit_button.dart';
 import 'package:condition_report/models/occupancy_model.dart';
 import 'package:condition_report/provider/assessment_provider.dart';
 import 'package:condition_report/services/firestore_services.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class Occupancy extends StatefulWidget {
-  const Occupancy({super.key});
+  final Map<String, dynamic>? initialData; // Accepts initial data for editing
+
+  const Occupancy({super.key, this.initialData});
 
   @override
   State<Occupancy> createState() => _OccupancyState();
 }
 
 class _OccupancyState extends State<Occupancy> {
-  final TextEditingController _totalOccupantsController = TextEditingController();
-  final TextEditingController _childrenUnder18Controller = TextEditingController();
-  final TextEditingController _pensionableMemberController = TextEditingController();
-  final TextEditingController _specialConsiderationController = TextEditingController();
-  final TextEditingController _disableMemberController = TextEditingController();
-  // String? elementN1;
-  // String? elementN2;
-  // String? elementN3;
-  // String? elementN4;
-
+  final TextEditingController _totalOccupantsController =
+      TextEditingController();
+  final TextEditingController _childrenUnder18Controller =
+      TextEditingController();
+  final TextEditingController _pensionableMemberController =
+      TextEditingController();
+  final TextEditingController _specialConsiderationController =
+      TextEditingController();
+  final TextEditingController _disableMemberController =
+      TextEditingController();
   final formKey = GlobalKey<FormState>();
+
+  bool _isLoading = true; // Added for loading state
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeData();
+  }
+
+  void _initializeData() async {
+    if (widget.initialData != null) {}
+
+    setState(() {
+      _totalOccupantsController.text =
+          widget.initialData?['totalOccupants']?.toString() ?? '';
+      _childrenUnder18Controller.text =
+          widget.initialData?['childrenUnder18']?.toString() ?? '';
+      _pensionableMemberController.text =
+          widget.initialData?['pensionableMembers']?.toString() ?? '';
+      _specialConsiderationController.text =
+          widget.initialData?['specialConsideration']?.toString() ?? '';
+      _disableMemberController.text =
+          widget.initialData?['disabledMembers']?.toString() ?? '';
+      _isLoading = false; // Data loading completed
+    });
+  }
+
+  @override
+  void dispose() {
+    // Dispose controllers
+    _totalOccupantsController.dispose();
+    _childrenUnder18Controller.dispose();
+    _pensionableMemberController.dispose();
+    _specialConsiderationController.dispose();
+    _disableMemberController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         centerTitle: true,
         elevation: 0,
         backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
-        leading: Padding(
-          padding: const EdgeInsets.only(
-            left: 24,
-            top: 20,
-            bottom: 12,
-          ),
-          child: SizedBox(
-            height: 24,
-            width: 24,
-            child: IconButton(
-              padding: const EdgeInsets.all(0.0),
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const ConditionReport()),
-                );
-              },
-              icon: SvgPicture.asset(
-                "assets/images/Icon (2).svg",
-                height: 24,
-                width: 24,
-              ),
-            ),
-          ),
-        ),
         title: const Padding(
           padding: EdgeInsets.only(top: 20, bottom: 12),
           child: Text(
             "Occupancy",
-            textAlign: TextAlign.center,
             style: TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 24,
@@ -72,679 +87,183 @@ class _OccupancyState extends State<Occupancy> {
             ),
           ),
         ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(
-              right: 24,
-            ),
-            child: IconButton(
-              padding: const EdgeInsets.all(0.0),
-              color: const Color.fromRGBO(57, 55, 56, 1),
-              onPressed: () {},
-              icon: Image.asset(
-                "assets/images/Filters (1).png",
-                scale: 1.0,
-              ),
-            ),
-          ),
-        ],
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(left: 32, right: 32, bottom: 20),
-        child: Container(
-          height: 60,
-          width: 364,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(100),
-          ),
-          child: FilledButton(
-            style: ButtonStyle(
-              backgroundColor: WidgetStateProperty.all<Color>(
-                const Color.fromRGBO(98, 98, 98, 1),
-              ),
-            ),
+      bottomNavigationBar: SubmitButton(
+        text: "Submit", // Change text based on mode
         onPressed: () async {
-              // Check if form is valid
-              if (formKey.currentState!.validate()) {
-                formKey.currentState!.save();
+          if (formKey.currentState!.validate()) {
+            formKey.currentState!.save();
 
-                // Show the loading dialog
-                showDialog(
-                  context: context,
-                  barrierDismissible:
-                      false, // Prevent dismissing the dialog manually
-                  builder: (context) {
-                    return Dialog(
-                      child: Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: const [
-                            CircularProgressIndicator(color: Colors.black),
-                            SizedBox(height: 15),
-                            Text("Uploading data..."),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                );
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => const LoadingDialog(),
+            );
 
-                try {
-                
+            try {
+              // Add or update occupancy details
+              await FireStoreServices().addOccupancyDetails(
+                currentId!, // Use updateId for edit, otherwise a new ID
+                OccupancyModel(
+                  childrenUnder18: _childrenUnder18Controller.text.trim(),
+                  disabledMembers: _disableMemberController.text.trim(),
+                  pensionableMembers: _pensionableMemberController.text.trim(),
+                  totalOccupants: _totalOccupantsController.text.trim(),
+                  specialConsideration:
+                      _specialConsiderationController.text.trim(),
+                  isAdded: true,
+                ),
+              );
 
-                  // Simulate a short delay to ensure the loading dialog is visible
-                  await Future.delayed(const Duration(milliseconds: 500));
-
-                  // Upload General Details to Firestore
-                  await FireStoreServices().addOccupancyDetails(currentId!,
-                    OccupancyModel(
-                      childrenUnder18: _childrenUnder18Controller.text.trim(),
-                      disabledMembers: _specialConsiderationController.text.trim(),
-                      pensionableMembers: _pensionableMemberController.text.trim(),
-                      totalOccupants: _totalOccupantsController.text.trim(),
-                      specialConsideration: _specialConsiderationController.text.trim(),
-                     
-                    ),
-                  );
-
-                  // Show success message
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Occupancy added!"),
-                      backgroundColor: Colors.green,
-                    ),
-                  );
-                } catch (e) {
-                  // Show error message
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text("Error adding data: $e"),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                } finally {
-                  // Close the loading dialog
-                  Navigator.pop(context);
-                }
-
-               
-            
-              } else {
-                
-              }
-            },
-            child: const Text(
-              "Submit",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 16,
-                fontStyle: FontStyle.normal,
-                fontWeight: FontWeight.w600,
-                color: Color.fromRGBO(255, 255, 255, 1),
-              ),
-            ),
-          ),
-        ),
+              // Show success Snackbar
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("Operation Successful!"),
+                  backgroundColor: Colors.green,
+                ),
+              );
+              Navigator.pop(context); // Close loading dialog
+            } catch (e) {
+              // Show error Snackbar
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("Error: $e"),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            } finally {
+              Navigator.pop(context);
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ConditionReport(),
+                  ));
+            }
+          }
+        },
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.only(top: 1),
-              color: const Color.fromRGBO(204, 204, 204, 1),
-              child: Container(
-                height: 926,
-                width: double.infinity,
-                color: const Color.fromRGBO(253, 253, 253, 1),
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    left: 32,
-                    right: 32,
-                    top: 20,
-                  ),
-                  child: SizedBox(
-                    width: 364,
-                    child: Form(
-                      key: formKey,
-                      child: Column(
-                        children: [
-                          Column(
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(
+              color: Colors.black,
+            )) // Show loading spinner
+          : SingleChildScrollView(
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.only(top: 1),
+                    color: const Color.fromRGBO(204, 204, 204, 1),
+                    child: Container(
+                      height: 926,
+                      width: double.infinity,
+                      color: const Color.fromRGBO(253, 253, 253, 1),
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          left: 32,
+                          right: 32,
+                          top: 20,
+                        ),
+                        child: Form(
+                          key: formKey,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Padding(
-                                padding: EdgeInsets.only(left: 10, right: 10),
-                                child: SizedBox(
-                                  height: 24,
-                                  width: 330,
-                                  child: Text("Total Number of Occupants?",
-                                      textAlign: TextAlign.start,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w300,
-                                        color: Color.fromRGBO(98, 98, 98, 1),
-                                      )),
+                              FieldHeading(
+                                  heading: "Total Number of Occupants?"),
+                              const SizedBox(height: 5),
+                              TextFormField(
+                                autovalidateMode:
+                                    AutovalidateMode.onUserInteraction,
+                                validator: (String? value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter Reference Number';
+                                  }
+                                  return null;
+                                },
+                                controller: _totalOccupantsController,
+                                decoration: InputDecoration(
+                                  hintText: "Enter the Total Occupants",
                                 ),
+                              ),
+                              const SizedBox(height: 16),
+                              FieldHeading(
+                                heading:
+                                    "How many children are under the age of 18?",
                               ),
                               const SizedBox(height: 5),
-                              SizedBox(
-                                // height: 62,
-                                width: 364,
-                                child: TextFormField(
-                                  autovalidateMode:
-                                      AutovalidateMode.onUserInteraction,
-                                  validator: (String? value) {
-                                    // Validator for form field
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please enter Reference Number'; // Return error message
-                                    }
-                                    return null; // Return null if input is valid
-                                  },
-                                  controller: _totalOccupantsController,
-                                  // onChanged: (String value) {
-                                  //   // Track the input value
-                                  //   setState(() {
-                                  //     elementN1 = value;
-                                  //   });
-                                  // },
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontStyle: FontStyle.normal,
-                                    fontWeight: FontWeight.w300,
-                                    color: Color.fromRGBO(57, 55, 56, 1),
-                                  ),
-                                  textAlign: TextAlign.start,
-                                  decoration: InputDecoration(
-                                    hintText: "Enter the Total Occupants",
-                                    hintStyle: const TextStyle(
-                                      fontSize: 16,
-                                      fontStyle: FontStyle.normal,
-                                      fontWeight: FontWeight.w300,
-                                      color: Color.fromRGBO(57, 55, 56, 0.5),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    disabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    isDense: true,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 18,
-                                    ),
-                                  ),
+                              TextFormField(
+                                autovalidateMode:
+                                    AutovalidateMode.onUserInteraction,
+                                validator: (String? value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter Reference Number';
+                                  }
+                                  return null;
+                                },
+                                controller: _childrenUnder18Controller,
+                                decoration: InputDecoration(
+                                  hintText: "Enter the Total Children under 18",
                                 ),
                               ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          Column(
-                            children: [
-                              const Padding(
-                                padding: EdgeInsets.only(left: 10, right: 10),
-                                child: SizedBox(
-                                  height: 24,
-                                  width: 330,
-                                  child: Text(
-                                      "How many children are under the age of 18?",
-                                      textAlign: TextAlign.start,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w300,
-                                        color: Color.fromRGBO(98, 98, 98, 1),
-                                      )),
-                                ),
-                              ),
+                              const SizedBox(height: 16),
+                              FieldHeading(
+                                  heading: "How many of a pensionable age?"),
                               const SizedBox(height: 5),
-                              SizedBox(
-                                // height: 62,
-                                width: 364,
-                                child: TextFormField(
-                                  autovalidateMode:
-                                      AutovalidateMode.onUserInteraction,
-                                  validator: (String? value) {
-                                    // Validator for form field
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please enter Reference Number'; // Return error message
-                                    }
-                                    return null; // Return null if input is valid
-                                  },
-                                  controller: _childrenUnder18Controller,
-                                  // onChanged: (String value) {
-                                  //   // Track the input value
-                                  //   setState(() {
-                                  //     elementN2 = value;
-                                  //   });
-                                  // },
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontStyle: FontStyle.normal,
-                                    fontWeight: FontWeight.w300,
-                                    color: Color.fromRGBO(57, 55, 56, 1),
-                                  ),
-                                  textAlign: TextAlign.start,
-                                  decoration: InputDecoration(
+                              TextFormField(
+                                autovalidateMode:
+                                    AutovalidateMode.onUserInteraction,
+                                validator: (String? value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter Reference Number';
+                                  }
+                                  return null;
+                                },
+                                controller: _pensionableMemberController,
+                                decoration: InputDecoration(
+                                  hintText:
+                                      "Enter the Total Pensionable Members",
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              FieldHeading(
+                                  heading: "How many with disabilities?"),
+                              const SizedBox(height: 5),
+                              TextFormField(
+                                autovalidateMode:
+                                    AutovalidateMode.onUserInteraction,
+                                validator: (String? value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter Reference Number';
+                                  }
+                                  return null;
+                                },
+                                controller: _disableMemberController,
+                                decoration: InputDecoration(
                                     hintText:
-                                        "Enter the Total Children under 18",
-                                    hintStyle: const TextStyle(
-                                      fontSize: 16,
-                                      fontStyle: FontStyle.normal,
-                                      fontWeight: FontWeight.w300,
-                                      color: Color.fromRGBO(57, 55, 56, 0.5),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    disabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    isDense: true,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 18,
-                                    ),
-                                  ),
-                                ),
+                                        "Enter the Total Disabled Members"),
                               ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          Column(
-                            children: [
-                              const Padding(
-                                padding: EdgeInsets.only(left: 10, right: 10),
-                                child: SizedBox(
-                                  height: 24,
-                                  width: 330,
-                                  child: Text("How many of a pensionable age?",
-                                      textAlign: TextAlign.start,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w300,
-                                        color: Color.fromRGBO(98, 98, 98, 1),
-                                      )),
-                                ),
-                              ),
-                              const SizedBox(height: 5),
-                              SizedBox(
-                                // height: 62,
-                                width: 364,
-                                child: TextFormField(
-                                  autovalidateMode:
-                                      AutovalidateMode.onUserInteraction,
-                                  validator: (String? value) {
-                                    // Validator for form field
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please enter Reference Number'; // Return error message
-                                    }
-                                    return null; // Return null if input is valid
-                                  },
-                                  controller: _pensionableMemberController,
-                                  // onChanged: (String value) {
-                                  //   // Track the input value
-                                  //   setState(() {
-                                  //     elementN3 = value;
-                                  //   });
-                                  // },
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontStyle: FontStyle.normal,
-                                    fontWeight: FontWeight.w300,
-                                    color: Color.fromRGBO(57, 55, 56, 1),
-                                  ),
-                                  textAlign: TextAlign.start,
-                                  decoration: InputDecoration(
-                                    hintText:
-                                        "Enter the Total Pensionable Members",
-                                    hintStyle: const TextStyle(
-                                      fontSize: 16,
-                                      fontStyle: FontStyle.normal,
-                                      fontWeight: FontWeight.w300,
-                                      color: Color.fromRGBO(57, 55, 56, 0.5),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    disabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    isDense: true,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 18,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          Column(
-                            children: [
-                              const Padding(
-                                padding: EdgeInsets.only(left: 10, right: 10),
-                                child: SizedBox(
-                                  height: 24,
-                                  width: 330,
-                                  child: Text("How many with disabilities?",
-                                      textAlign: TextAlign.start,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w300,
-                                        color: Color.fromRGBO(98, 98, 98, 1),
-                                      )),
-                                ),
-                              ),
-                              const SizedBox(height: 5),
-                              SizedBox(
-                                width: 364,
-                                child: TextFormField(
-                                  autovalidateMode:
-                                      AutovalidateMode.onUserInteraction,
-                                  validator: (String? value) {
-                                    // Validator for form field
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please enter Reference Number'; // Return error message
-                                    }
-                                    return null; // Return null if input is valid
-                                  },
-                                  controller: _disableMemberController,
-                                  // onChanged: (String value) {
-                                  //   // Track the input value
-                                  //   setState(() {
-                                  //     elementN4 = value;
-                                  //   });
-                                  // },
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontStyle: FontStyle.normal,
-                                    fontWeight: FontWeight.w300,
-                                    color: Color.fromRGBO(57, 55, 56, 1),
-                                  ),
-                                  textAlign: TextAlign.start,
-                                  decoration: InputDecoration(
-                                    hintText:
-                                        "Enter the Total Disabled Members",
-                                    hintStyle: const TextStyle(
-                                      fontSize: 16,
-                                      fontStyle: FontStyle.normal,
-                                      fontWeight: FontWeight.w300,
-                                      color: Color.fromRGBO(57, 55, 56, 0.5),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    disabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    isDense: true,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 18,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          Column(
-                            children: [
-                              const Padding(
-                                padding: EdgeInsets.only(left: 10, right: 10),
-                                child: SizedBox(
-                                  height: 24,
-                                  width: 330,
-                                  child: Text("Special Considerations (Optional)",
-                                      textAlign: TextAlign.start,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w300,
-                                        color: Color.fromRGBO(98, 98, 98, 1),
-                                      )),
-                                ),
+                              const SizedBox(height: 16),
+                              FieldHeading(
+                                heading: "Special Considerations (Optional)",
                               ),
                               const SizedBox(height: 5),
                               TextFormField(
                                 maxLines: 3,
-                                
-                                  controller: _specialConsiderationController,
-                                  // onChanged: (String value) {
-                                  //   // Track the input value
-                                  //   setState(() {
-                                  //     elementN4 = value;
-                                  //   });
-                                  // },
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontStyle: FontStyle.normal,
-                                    fontWeight: FontWeight.w300,
-                                    color: Color.fromRGBO(57, 55, 56, 1),
-                                  ),
-                                  textAlign: TextAlign.start,
-                                  decoration: InputDecoration(
-                                    hintText:
-                                        "If any",
-                                    hintStyle: const TextStyle(
-                                      fontSize: 16,
-                                      fontStyle: FontStyle.normal,
-                                      fontWeight: FontWeight.w300,
-                                      color: Color.fromRGBO(57, 55, 56, 0.5),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    disabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        16,
-                                      ),
-                                      borderSide: const BorderSide(
-                                        color: Color(0X19626262),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    isDense: true,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 18,
-                                    ),
-                                  ),
+                                controller: _specialConsiderationController,
+                                decoration: InputDecoration(
+                                  hintText: "If any",
                                 ),
-                              // Container(
-                              //   constraints: const BoxConstraints(
-                              //     minHeight:
-                              //         100, // Default height of the container
-                              //   ),
-                              //   width: 364,
-                              //   decoration: BoxDecoration(
-                              //     border: Border.all(
-                              //       width: 2,
-                              //       color:
-                              //           const Color.fromRGBO(98, 98, 98, 0.1),
-                              //     ),
-                              //     borderRadius: BorderRadius.circular(16),
-                              //   ),
-                              //   child: Padding(
-                              //     padding: const EdgeInsets.only(
-                              //         left: 17, right: 17, top: 10, bottom: 19),
-                              //     child: CupertinoTextFormFieldRow(
-                              //       textAlign: TextAlign.start,
-                              //       maxLines: null, // Allows for multiple lines
-                              //       keyboardType: TextInputType
-                              //           .multiline, // Keyboard suited for multiline
-                              //       placeholder: "If any! (optional)",
-                              //       placeholderStyle: const TextStyle(
-                              //         fontSize: 16,
-                              //         fontStyle: FontStyle.normal,
-                              //         fontWeight: FontWeight.w300,
-                              //         color: Color.fromRGBO(57, 55, 56, 0.5),
-                              //       ),
-                              //       padding: EdgeInsets.zero,
-                              //       style: const TextStyle(
-                              //         fontSize: 16,
-                              //         fontStyle: FontStyle.normal,
-                              //         fontWeight: FontWeight.w300,
-                              //         color: Color.fromRGBO(57, 55, 56, 1),
-                              //       ),
-                              //     ),
-                              //   ),
-                              // ),
+                              ),
                             ],
                           ),
-                        ],
+                        ),
                       ),
                     ),
                   ),
-                ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
     );
   }
 }

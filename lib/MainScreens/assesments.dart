@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:condition_report/Screens/condition_report.dart';
+import 'package:condition_report/provider/assessment_provider.dart';
 import 'package:condition_report/services/firestore_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -94,7 +95,7 @@ class _AssesmentsScreenState extends State<AssesmentsScreen> {
                           ),
                           onPressed: () {
                             FireStoreServices().createAssessment();
-                            Navigator.pushReplacement(
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => const ConditionReport(),
@@ -178,8 +179,24 @@ class _AssesmentsScreenState extends State<AssesmentsScreen> {
                                 final refNo = assessment['generalDetails']
                                         ['country'] ??
                                     'blank_assessment';
-
+                                isAddedGD =
+                                    assessment['generalDetails']['isAdded'] ?? false;
+                                isAddedPD =
+                                    assessment['propertyDetails']['isAdded'] ?? false;
+                                isAddedO = assessment['occupancy']['isAdded'] ?? false;
                                 return GestureDetector(
+                                  onTap: () {
+                                    currentId = snapshot.data!.docs[index].id;
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ConditionReport(
+                                          assessmentId:
+                                              snapshot.data!.docs[index].id,
+                                        ),
+                                      ),
+                                    );
+                                  },
                                   onLongPress: () {
                                     showDialog(
                                       context: context,

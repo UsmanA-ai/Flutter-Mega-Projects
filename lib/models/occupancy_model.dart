@@ -4,6 +4,7 @@ class OccupancyModel {
   String pensionableMembers;
   String disabledMembers;
   String? specialConsideration;
+  bool isAdded;
 
   OccupancyModel({
     required this.totalOccupants,
@@ -11,6 +12,7 @@ class OccupancyModel {
     required this.pensionableMembers,
     required this.disabledMembers,
     this.specialConsideration,
+    required this.isAdded,
   });
 
   // Convert OccupancyModel to a Map
@@ -21,6 +23,7 @@ class OccupancyModel {
       'pensionableMembers': pensionableMembers,
       'disabledMembers': disabledMembers,
       'specialConsideration': specialConsideration,
+      "isAdded": isAdded,
     };
   }
 
@@ -31,7 +34,9 @@ class OccupancyModel {
       childrenUnder18: map['childrenUnder18'] ?? '',
       pensionableMembers: map['pensionableMembers'] ?? '',
       disabledMembers: map['disabledMembers'] ?? '',
-      specialConsideration: map['specialConsideration'], // Null-safe since it's optional
+      specialConsideration:
+          map['specialConsideration'], // Null-safe since it's optional
+      isAdded: map["isAdded"] ?? false,
     );
   }
 }
