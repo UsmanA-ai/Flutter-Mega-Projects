@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:condition_report/models/general_details_model.dart';
+import 'package:condition_report/models/new_element_model.dart';
 import 'package:condition_report/models/occupancy_model.dart';
 import 'package:condition_report/models/property_details_model.dart';
 import 'package:condition_report/provider/assessment_provider.dart';
@@ -27,12 +28,12 @@ class FireStoreServices {
     }
   }
   
-  Future<String> createNewElement(String elementName) async {
+  Future<String> createNewElement(String elementName,NewElementModel data) async {
     try {
       final docRef = _firebaseFirestore.doc(currentId); // Generate a random document ID
       // ids.add(docRef.id);
-      await docRef.set({
-        elementName: {}
+      await docRef.update({
+        elementName: data.toMap(),
       });
       return docRef.id; // Return the generated document ID
     } catch (e) {

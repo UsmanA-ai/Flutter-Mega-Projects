@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:condition_report/Screens/condition_report.dart';
 import 'package:condition_report/Screens/outstanding_photos..dart';
 import 'package:condition_report/Screens/photo_stream.dart';
+import 'package:condition_report/models/new_element_model.dart';
 import 'package:condition_report/services/firestore_services.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +28,20 @@ class _AddNewElementState extends State<AddNewElement> {
       TextEditingController();
   final TextEditingController addNotesController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
+  String? selectedElementType;
+  String? selectedElement;
+  String? isWindow;
+  String? isUnderCut;
+  String? isTrickleEvent;
+  String? isFluedHeating;
+  String? isGapInUnderCut;
+  String? isFanFitted;
+  String? isExistingVentilation;
+  String? isDamp;
+  String? additionalNotes;
+  List<String>? conditionSummaryImage;
+  List<String>? trickleEventImage;
+  List<String>? internalDoorImage;
   String barTitle = "New Element";
   @override
   void initState() {
@@ -260,9 +275,27 @@ class _AddNewElementState extends State<AddNewElement> {
             onPressed: () {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
+ 
+                FireStoreServices().createNewElement(
+                  elementNameController.text.trim(),
+                  NewElementModel(
 
-                FireStoreServices()
-                    .createNewElement(elementNameController.text.trim());
+                    isDamp: isDamp ?? "",
+                    isExistingVentilation: isExistingVentilation ?? "",
+                    isFanFitted: isFanFitted ?? "",
+                    isFluedHeating: isFluedHeating ?? "",
+                    isGapInUnderCut: isGapInUnderCut ?? "",
+                    isTrickleEvent: isTrickleEvent ?? "",
+                    isUnderCut: isUnderCut ?? "",
+                    isWindow: isWindow ?? "",
+                    selectedElement: button2 ?? "",
+                    selectedElementType: button1 ?? "",
+                    additionalNotes: additionalNotes ?? "",
+                    conditionSummaryImage: conditionSummaryImage ?? [],
+                    internalDoorImage: internalDoorImage ?? [],
+                    trickleEventImage: trickleEventImage ?? [],
+                  ),
+                );
 
                 // ScaffoldMessenger.of(context).showSnackBar(
                 //   const SnackBar(
@@ -525,8 +558,9 @@ class _AddNewElementState extends State<AddNewElement> {
                                     },
                                     onChanged: (String? value) {
                                       setState(() {
+                                        selectedElementType = value;
                                         button1 = value;
-                                        button2 = null;
+                                        // selectedElement = null;
                                       });
                                     },
                                   ),
@@ -645,6 +679,7 @@ class _AddNewElementState extends State<AddNewElement> {
                                     },
                                     onChanged: (String? value) {
                                       setState(() {
+                                        // selectedElement = value;
                                         button2 = value;
                                       });
                                     },
@@ -772,6 +807,7 @@ class _AddNewElementState extends State<AddNewElement> {
                                 width: 364,
                                 child: Center(
                                   child: TextFormField(
+                                    controller: conditionSummaryController,
                                     autovalidateMode:
                                         AutovalidateMode.onUserInteraction,
                                     validator: (String? value) {
@@ -1062,7 +1098,8 @@ class _AddNewElementState extends State<AddNewElement> {
                                     },
                                     onChanged: (value) {
                                       setState(() {
-                                        button3 = value;
+                                        isWindow = value;
+                                        // button3 = value;
                                       });
                                     },
                                   ),
@@ -1185,7 +1222,8 @@ class _AddNewElementState extends State<AddNewElement> {
                                     },
                                     onChanged: (value) {
                                       setState(() {
-                                        button4 = value;
+                                        isUnderCut = value;
+                                        // button4 = value;
                                       });
                                     },
                                   ),
@@ -1319,7 +1357,8 @@ class _AddNewElementState extends State<AddNewElement> {
                                     },
                                     onChanged: (value) {
                                       setState(() {
-                                        button5 = value;
+                                        isTrickleEvent = value;
+                                        // button5 = value;
                                       });
                                     },
                                   ),
@@ -1517,7 +1556,8 @@ class _AddNewElementState extends State<AddNewElement> {
                                     },
                                     onChanged: (value) {
                                       setState(() {
-                                        button6 = value;
+                                        isFluedHeating = value;
+                                        // button6 = value;
                                       });
                                     },
                                   ),
@@ -1653,7 +1693,8 @@ class _AddNewElementState extends State<AddNewElement> {
                                     },
                                     onChanged: (value) {
                                       setState(() {
-                                        button7 = value;
+                                        isUnderCut = value;
+                                        // button7 = value;
                                       });
                                     },
                                   ),
@@ -1851,7 +1892,8 @@ class _AddNewElementState extends State<AddNewElement> {
                                     },
                                     onChanged: (value) {
                                       setState(() {
-                                        button8 = value;
+                                        isFanFitted = value;
+                                        // button8 = value;
                                       });
                                     },
                                   ),
@@ -1974,7 +2016,8 @@ class _AddNewElementState extends State<AddNewElement> {
                                     },
                                     onChanged: (value) {
                                       setState(() {
-                                        button9 = value;
+                                        isExistingVentilation = value;
+                                        // button9 = value;
                                       });
                                     },
                                   ),
@@ -2097,7 +2140,8 @@ class _AddNewElementState extends State<AddNewElement> {
                                     },
                                     onChanged: (value) {
                                       setState(() {
-                                        button10 = value;
+                                        isDamp = value;
+                                        // button10 = value;
                                       });
                                     },
                                   ),
@@ -2141,9 +2185,10 @@ class _AddNewElementState extends State<AddNewElement> {
                                   borderRadius: BorderRadius.circular(16),
                                 ),
                                 child: Padding(
-                                  padding: const EdgeInsets.only(
+                                  padding: EdgeInsets.only(
                                       left: 17, right: 17, top: 10, bottom: 19),
                                   child: CupertinoTextFormFieldRow(
+                                    controller: addNotesController,
                                     textAlign: TextAlign.start,
                                     maxLines: null, // Allows for multiple lines
                                     keyboardType: TextInputType
