@@ -54,11 +54,11 @@ class _PhotoStreamScreenState extends State<PhotoStreamScreen> {
 
       final List<String> urls = [];
       for (var file in response) {
-        log("Found file: ${file.name}");
+        // log("Found file: ${file.name}");
         final url = _supabaseClient.storage
             .from('Images')
             .getPublicUrl('images/${file.name}');
-        log("Generated URL: $url");
+        // log("Generated URL: $url");
         urls.add(url);
       }
 
@@ -133,8 +133,11 @@ class _PhotoStreamScreenState extends State<PhotoStreamScreen> {
       });
 
       log('Image uploaded and public URL added: $publicUrl');
+      // return publicUrl;
     } catch (e) {
-      log('Error uploading image: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to upload image: $e")),
+      );
     }
   }
 

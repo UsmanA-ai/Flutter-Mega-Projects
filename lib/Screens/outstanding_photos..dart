@@ -1,14 +1,11 @@
 import 'dart:io';
-
 import 'package:condition_report/Screens/condition_report.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class OutstandingPhotos extends StatefulWidget {
   final List<String> imagePaths;
-  const OutstandingPhotos({Key? key, required this.imagePaths})
-      : super(key: key);
+  const OutstandingPhotos({super.key, required this.imagePaths});
 
   @override
   State<OutstandingPhotos> createState() => _OutstandingPhotosState();

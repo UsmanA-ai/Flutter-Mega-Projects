@@ -56,11 +56,11 @@ class _ConditionReportState extends State<ConditionReport> {
 
       final List<String> urls = [];
       for (var file in response) {
-        log("Found file: ${file.name}");
+        // log("Found file: ${file.name}");
         final url = _supabaseClient.storage
             .from('Images')
             .getPublicUrl('images/${file.name}');
-        log("Generated URL: $url");
+        // log("Generated URL: $url");
         urls.add(url);
       }
 

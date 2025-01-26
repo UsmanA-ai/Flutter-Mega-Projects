@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:condition_report/Screens/condition_report.dart';
@@ -5,8 +6,10 @@ import 'package:condition_report/common_widgets/field_heading.dart';
 import 'package:condition_report/common_widgets/loading_dialog.dart';
 import 'package:condition_report/common_widgets/submit_button.dart';
 import 'package:condition_report/models/general_details_model.dart';
+import 'package:condition_report/models/image_detail.dart';
 import 'package:condition_report/provider/assessment_provider.dart';
 import 'package:condition_report/services/firestore_services.dart';
+import 'package:condition_report/services/supabase_services.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -191,6 +194,44 @@ class _GeneralDetailsState extends State<GeneralDetails> {
                 ),
               );
 
+              if (imagePaths.isNotEmpty) {
+                try {
+                  // Use Future.wait for concurrent uploads
+                  await Future.wait(
+                    imagePaths.map((imagePath) async {
+                      log('Uploading image: $imagePath');
+
+                      // Upload image to Supabase and get the public URL
+                      String? url = await SupabaseServices()
+                          .uploadImageToSupabase(context, imagePath);
+
+                      if (url != null) {
+                        log('Image uploaded successfully: $url');
+
+                        // Save image details to Firestore
+                        await FireStoreServices().addImage(
+                          currentId!,
+                          ImageDetail(
+                            location: "General Details",
+                            path: url,
+                            subSelection: "Sub Selection",
+                          ),
+                        );
+                        log('Image details saved to Firestore');
+                      } else {
+                        log('Image upload failed for: $imagePath');
+                      }
+                    }),
+                  );
+
+                  log('All images uploaded and details saved successfully.');
+                } catch (e) {
+                  log('Error during upload or save: $e');
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("An error occurred: $e")),
+                  );
+                }
+              }
 
               // Show success Snackbar
               ScaffoldMessenger.of(context).showSnackBar(
@@ -209,10 +250,14 @@ class _GeneralDetailsState extends State<GeneralDetails> {
                 ),
               );
             } finally {
-                            Navigator.pop(context);
+              Navigator.pop(context);
 
               // Close the loading dialog
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ConditionReport(),));
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ConditionReport(),
+                  ));
             }
 
             // Update the button state to reflect the success
@@ -268,6 +313,20 @@ class _GeneralDetailsState extends State<GeneralDetails> {
                             onChanged: (String value) {},
                             decoration: InputDecoration(
                               hintText: "Enter Reference Number",
+                              suffixIcon: IconButton(
+                                style: const ButtonStyle(
+                                    splashFactory: NoSplash.splashFactory),
+                                onPressed: () {
+                                  // log("Image Dates[] : $imageDates");
+                                  // log("Image Path[] : $imagePaths");
+                                  // log("SelectedImagePath : $selectedImagePath");
+                                  _showImageSourceSelection();
+                                },
+                                icon: SvgPicture.asset(
+                                  "assets/images/camera (1).svg",
+                                  color: const Color.fromRGBO(57, 55, 56, 0.5),
+                                ),
+                              ),
                             ),
                           ),
                           const SizedBox(height: 5),

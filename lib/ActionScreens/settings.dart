@@ -124,7 +124,7 @@ class _SettingsState extends State<Settings> {
                                       switchValue = value;
                                     });
                                   },
-                                  activeColor:
+                                  activeTrackColor:
                                       const Color.fromRGBO(52, 199, 89, 1),
                                 ),
                               ),

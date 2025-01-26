@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
-import 'package:condition_report/Screens/condition_report.dart';
 import 'package:condition_report/Screens/outstanding_photos..dart';
 import 'package:condition_report/Screens/photo_stream.dart';
 import 'package:condition_report/models/new_element_model.dart';
@@ -11,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:condition_report/Screens/globals.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -127,16 +124,12 @@ class _AddNewElementState extends State<AddNewElement> {
       });
       // Navigate to Outstanding Photos and PhotoStream screens
       List<String> imagePaths;
-      List<DateTime> imageDates;
       if (cameraIndex == 1) {
         imagePaths = camera1Images;
-        imageDates = camera1ImageDates;
       } else if (cameraIndex == 2) {
         imagePaths = camera2Images;
-        imageDates = camera2ImageDates;
       } else {
         imagePaths = camera3Images;
-        imageDates = camera3ImageDates;
       }
 
       Navigator.push(

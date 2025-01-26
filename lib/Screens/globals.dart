@@ -1,4 +1,4 @@
-library globals;
+library;
 
 import 'package:flutter/widgets.dart';
 

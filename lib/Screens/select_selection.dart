@@ -5,10 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 // ignore_for_file: must_be_immutable
 class SelectSelctionScreen extends StatefulWidget {
-  SelectSelctionScreen({Key? key})
-      : super(
-          key: key,
-        );
+  const SelectSelctionScreen({super.key});
 
   @override
   State<SelectSelctionScreen> createState() => _SelectSelctionScreenState();
