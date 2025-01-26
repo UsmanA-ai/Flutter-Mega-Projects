@@ -114,6 +114,7 @@ class FireStoreServices {
 
   Stream<QuerySnapshot<Map<String, dynamic>>> fetchAllAssessments() {
     try {
+      // log(_firebaseAssessment.snapshots().toString());
       return _firebaseAssessment.snapshots();
     } catch (e) {
       throw Exception(e.toString());

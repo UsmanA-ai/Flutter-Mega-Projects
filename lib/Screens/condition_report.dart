@@ -33,6 +33,7 @@ class _ConditionReportState extends State<ConditionReport> {
   void initState() {
     super.initState();
     _fetchImages();
+    FireStoreServices().fetchAllAssessments();
     // setState(() {});
     // log("initstate");
   }

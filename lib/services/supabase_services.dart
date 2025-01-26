@@ -9,14 +9,6 @@ class SupabaseServices {
   final SupabaseClient _supabaseClient = Supabase.instance.client;
   ValueNotifier<double> uploadProgress = ValueNotifier<double>(0.0);
 
-  // Initialize Supabase
-  SupabaseServices() {
-    Supabase.initialize(
-      url: 'YOUR_SUPABASE_URL', // Replace with your Supabase URL
-      anonKey: 'YOUR_SUPABASE_ANON_KEY', // Replace with your Supabase anon key
-    );
-  }
-
   // Pick an image using ImagePicker
   Future<void> pickImage(ImageSource source) async {
     final ImagePicker picker = ImagePicker();
@@ -29,55 +21,43 @@ class SupabaseServices {
 
   Future<String?> uploadImageToSupabase(
       BuildContext context, String imagePath) async {
-    try {
-      final file = File(imagePath);
+    final file = File(imagePath);
 
-      // Validate the file existence and size
-      if (!await file.exists()) {
-        log('File not found at path: $imagePath');
-        throw Exception('File not found');
-      }
+    // Validate the file existence and size
+    // if (!await file.exists()) {
+    //   log('File not found at path: $imagePath');
+    //   throw Exception('File not found');
+    // }
 
-      final fileSize = await file.length();
-      if (fileSize == 0) {
-        log('File is empty at path: $imagePath');
-        throw Exception('File is empty');
-      }
-      log('File size: $fileSize bytes');
+    // final fileSize = await file.length();
+    // if (fileSize == 0) {
+    //   log('File is empty at path: $imagePath');
+    //   throw Exception('File is empty');
+    // }
 
-      // Read file bytes
-      log('Reading file...');
-      final fileBytes = await file.readAsBytes();
-      log('File read successfully');
+    // Read file bytes
+    log('Reading file...');
+    final fileBytes = await file.readAsBytes();
+    log('File read successfully');
 
-      // Generate unique file path
-      final fileName = DateTime.now().millisecondsSinceEpoch.toString();
-      final path = 'images/$fileName.jpg';
+    // Generate unique file path
+    final fileName = DateTime.now().millisecondsSinceEpoch.toString();
+    final path = 'images/$fileName.jpg';
 
-      // Upload file to Supabase
-      log('Uploading file to Supabase...');
-      await _supabaseClient.storage.from('Images').uploadBinary(
-            path,
-            fileBytes,
-            fileOptions: const FileOptions(upsert: false),
-          );
-      log('File uploaded successfully to: $path');
+    // Upload file to Supabase
+    log('Uploading file to Supabase...');
+    await _supabaseClient.storage.from('Images').uploadBinary(
+          path,
+          fileBytes,
+          fileOptions: const FileOptions(upsert: false),
+        );
+    log('File uploaded successfully to: $path');
 
-      // Get public URL for the uploaded file
-      final publicUrl =
-          _supabaseClient.storage.from('Images').getPublicUrl(path);
-      log('Generated public URL: $publicUrl');
+    // Get public URL for the uploaded file
+    final publicUrl = _supabaseClient.storage.from('Images').getPublicUrl(path);
+    log('Generated public URL: $publicUrl');
 
-      return publicUrl;
-    } catch (e, stackTrace) {
-      log('Error uploading image: $e');
-      log('StackTrace: $stackTrace');
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to upload image: $e")),
-      );
-      return null;
-    }
+    return publicUrl;
   }
 
   // Upload multiple images to Supabase with progress tracking
