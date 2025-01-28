@@ -1,4 +1,6 @@
 class NewElementModel {
+  String elementName;
+  String conditionSummaryText;
   String selectedElementType;
   String selectedElement;
   String isWindow;
@@ -17,6 +19,8 @@ class NewElementModel {
   // Constructor
   NewElementModel({
     required this.selectedElementType,
+    required this.conditionSummaryText,
+    required this.elementName,
     required this.selectedElement,
     required this.isWindow,
     required this.isUnderCut,
@@ -49,6 +53,8 @@ class NewElementModel {
       'conditionSummaryImage': conditionSummaryImage,
       'trickleEventImage': trickleEventImage,
       'internalDoorImage': internalDoorImage,
+      'conditionSummaryText': conditionSummaryText,
+      'elementName': elementName,
     };
   }
 
@@ -58,6 +64,8 @@ class NewElementModel {
       selectedElementType: map['selectedElementType'] ?? '',
       selectedElement: map['selectedElement'] ?? '',
       isWindow: map['isWindow'] ?? '',
+      elementName: map['elementName'] ?? '',
+      conditionSummaryText: map['conditionSummaryText'] ?? '',
       isUnderCut: map['isUnderCut'] ?? '',
       isTrickleEvent: map['isTrickleEvent'] ?? '',
       isFluedHeating: map['isFluedHeating'] ?? '',

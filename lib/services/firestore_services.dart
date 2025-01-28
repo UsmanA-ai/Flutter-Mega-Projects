@@ -121,6 +121,15 @@ class FireStoreServices {
     }
   }
 
+  Stream<DocumentSnapshot<Map<String, dynamic>>> fetchNewElements() {
+    try {
+      // log(_firebaseAssessment.snapshots().toString());
+      return _firebaseAssessment.doc(currentId).snapshots();
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
   // Delete an assessment by its ID
   Future<void> deleteAssessment(String assessmentId) async {
     try {

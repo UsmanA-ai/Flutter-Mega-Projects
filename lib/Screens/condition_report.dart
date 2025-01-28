@@ -72,9 +72,9 @@ class _ConditionReportState extends State<ConditionReport> {
       });
     } catch (e) {
       log("Error fetching images: $e");
-      setState(() {
-// Hide loading indicator
-      });
+//       setState(() {
+// // Hide loading indicator
+//       });
     }
   }
 
@@ -143,7 +143,7 @@ class _ConditionReportState extends State<ConditionReport> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const AddNewElement()),
+                                  builder: (context) => AddNewElement()),
                             );
                           },
                           child: SizedBox(
@@ -448,7 +448,7 @@ class _ConditionReportState extends State<ConditionReport> {
                                 // Fetch data only if assessmentId is not null
                                 assessmentData = await FireStoreServices()
                                     .fetchAssessment(widget.assessmentId!);
-                                log('Fetched assessment data: $assessmentData');
+                                // log('Fetched assessment data: $assessmentData');
                               } catch (e) {
                                 log('Error fetching assessment data: $e');
                                 // Handle fetching errors if necessary
@@ -460,8 +460,6 @@ class _ConditionReportState extends State<ConditionReport> {
                                 );
                                 return;
                               }
-                            } else {
-                              log('Creating new assessment: No initial data available');
                             }
 
                             // Navigate to the Occupancy screen with existing data or empty values
@@ -617,7 +615,7 @@ class _ConditionReportState extends State<ConditionReport> {
                                 // Fetch data only if assessmentId is not null
                                 assessmentData = await FireStoreServices()
                                     .fetchAssessment(widget.assessmentId!);
-                                log('Fetched assessment data: $assessmentData');
+                                // log('Fetched assessment data: $assessmentData');
                               } catch (e) {
                                 log('Error fetching assessment data: $e');
                                 // Handle fetching errors if necessary
@@ -629,8 +627,6 @@ class _ConditionReportState extends State<ConditionReport> {
                                 );
                                 return;
                               }
-                            } else {
-                              log('Creating new assessment: No initial data available');
                             }
 
                             // Navigate to the Occupancy screen with existing data or empty values
@@ -880,7 +876,7 @@ class _ConditionReportState extends State<ConditionReport> {
                                 // Fetch data only if assessmentId is not null
                                 assessmentData = await FireStoreServices()
                                     .fetchAssessment(widget.assessmentId!);
-                                log('Fetched assessment data: $assessmentData');
+                                // log('Fetched assessment data: $assessmentData');
                               } catch (e) {
                                 log('Error fetching assessment data: $e');
                                 // Handle fetching errors if necessary
@@ -892,8 +888,6 @@ class _ConditionReportState extends State<ConditionReport> {
                                 );
                                 return;
                               }
-                            } else {
-                              log('Creating new assessment: No initial data available');
                             }
 
                             // Navigate to the Occupancy screen with existing data or empty values
@@ -1037,6 +1031,239 @@ class _ConditionReportState extends State<ConditionReport> {
                       ),
                       const SizedBox(
                         height: 10,
+                      ),
+                      StreamBuilder(
+                        stream: FireStoreServices().fetchNewElements(),
+                        builder: (BuildContext context, snapshot) {
+                          if (!snapshot.hasData) {
+                            return SizedBox();
+                          }
+
+                          final data = snapshot.data!.data();
+                          List list = data!.entries
+                              .where((element) =>
+                                  element.key != 'occupancy' &&
+                                  element.key != 'images' &&
+                                  element.key != 'generalDetails' &&
+                                  element.key != 'propertyDetails')
+                              .map(
+                                (entry) => MapEntry(entry.key, entry.value),
+                              )
+                              .toList();
+                          return Column(
+                            children: list
+                                .map(
+                                  (text) => GestureDetector(
+                                    onTap: () async {
+                                      try {
+                                        Map<String, dynamic>? assessmentData;
+
+                                        if (widget.assessmentId != null) {
+                                          try {
+                                            // Fetch data only if assessmentId is not null
+                                            assessmentData =
+                                                await FireStoreServices()
+                                                    .fetchAssessment(
+                                                        widget.assessmentId!);
+                                            // log('Fetched assessment data: $assessmentData');
+                                          } catch (e) {
+                                            log('Error fetching assessment data: $e');
+                                            // Handle fetching errors if necessary
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                    'Error fetching data: $e'),
+                                                backgroundColor: Colors.red,
+                                              ),
+                                            );
+                                            return;
+                                          }
+                                        }
+
+                                        // Navigate to the Occupancy screen with existing data or empty values
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(builder: (context) {
+                                            log(text.value.toString());
+                                            return AddNewElement(map: text.value);
+                                          }),
+                                        );
+                                      } catch (e) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                              content: Text(
+                                                  "Error loading data: $e")),
+                                        );
+                                      }
+                                    },
+                                    child: Container(
+                                      width: 364,
+                                      decoration: const BoxDecoration(
+                                        border: Border(
+                                          top: BorderSide(
+                                            width: 0,
+                                            color: Color.fromRGBO(
+                                                253, 253, 253, 1),
+                                          ),
+                                          bottom: BorderSide(
+                                            width: 0,
+                                            color: Color.fromRGBO(
+                                                253, 253, 253, 1),
+                                          ),
+                                        ),
+                                      ),
+                                      child: CupertinoFormRow(
+                                        padding: EdgeInsets.zero,
+                                        prefix: Row(
+                                          children: [
+                                            Stack(
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets.all(
+                                                      13.5),
+                                                  child: SvgPicture.asset(
+                                                    "assets/images/doc-detail.svg",
+                                                    height: 24,
+                                                    width: 24,
+                                                    color: const Color.fromRGBO(
+                                                        37, 144, 240, 1),
+                                                  ),
+                                                ),
+                                                SvgPicture.asset(
+                                                  "assets/images/Group 1259.svg",
+                                                  height: 50.5,
+                                                  width: 50,
+                                                  color: const Color.fromRGBO(
+                                                      37, 144, 240, 1),
+                                                  // color: Colors.red,
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(width: 20),
+                                            Text(
+                                              text.key,
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontStyle: FontStyle.normal,
+                                                  fontWeight: FontWeight.w400,
+                                                  color: Color.fromRGBO(
+                                                      57, 55, 56, 1)),
+                                            ),
+                                          ],
+                                        ),
+                                        child: Container(
+                                          width: 56,
+                                          height: 24,
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                              color: const Color.fromRGBO(
+                                                  37, 144, 240, 1),
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(6.2),
+                                            color: isAddedPD
+                                                ? const Color.fromRGBO(
+                                                    37,
+                                                    144,
+                                                    240,
+                                                    1) // "Added" state color
+                                                : const Color.fromRGBO(
+                                                    37,
+                                                    144,
+                                                    240,
+                                                    0.1), // Initial state color
+                                          ),
+                                          child: CupertinoButton(
+                                            padding: const EdgeInsets.all(0),
+                                            onPressed: () {},
+                                            // async {
+                                            //   // Navigate to PropertyDetails and wait for the result
+                                            //   final result = await Navigator.push(
+                                            //     context,
+                                            //     MaterialPageRoute(
+                                            //       builder: (context) =>
+                                            //           PropertyDetails(), // Navigate to PropertyDetails screen
+                                            //     ),
+                                            //   );
+
+                                            //   // Check if the result is 'true' (indicating successful save)
+                                            //   if (result == true) {
+                                            //     setState(() {
+                                            //       isAdded =
+                                            //           true; // Change the button to "Added"
+                                            //       print(
+                                            //           "Item added successfully, button state updated.");
+                                            //     });
+                                            //   } else {
+                                            //     print("No item added.");
+                                            //   }
+                                            // },
+                                            child: isAddedPD
+                                                ? const SizedBox(
+                                                    height: 17,
+                                                    child: Text(
+                                                      "Added",
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: TextStyle(
+                                                        color: Color.fromRGBO(
+                                                            255, 255, 255, 1),
+                                                        fontSize: 14,
+                                                        fontStyle:
+                                                            FontStyle.normal,
+                                                        fontWeight:
+                                                            FontWeight.w300,
+                                                      ),
+                                                    ),
+                                                  )
+                                                : Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      SvgPicture.asset(
+                                                        "assets/images/Group 1353.svg",
+                                                        height: 10,
+                                                        width: 10,
+                                                        color: const Color
+                                                            .fromRGBO(
+                                                            37, 144, 240, 1),
+                                                      ),
+                                                      const SizedBox(width: 5),
+                                                      const SizedBox(
+                                                        height: 17,
+                                                        child: Text(
+                                                          "Add",
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                          style: TextStyle(
+                                                            color:
+                                                                Color.fromRGBO(
+                                                                    37,
+                                                                    144,
+                                                                    240,
+                                                                    1),
+                                                            fontSize: 14,
+                                                            fontStyle: FontStyle
+                                                                .normal,
+                                                            fontWeight:
+                                                                FontWeight.w300,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                          );
+                        },
                       ),
                       Column(
                         children: globalButtons,
