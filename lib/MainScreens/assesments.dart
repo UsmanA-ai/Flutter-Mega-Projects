@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:condition_report/Screens/condition_report.dart';
 import 'package:condition_report/provider/assessment_provider.dart';
@@ -125,6 +123,7 @@ class _AssesmentsScreenState extends State<AssesmentsScreen> {
                             ),
                           ),
                           onPressed: () {
+                            
                             FireStoreServices().createAssessment();
                             Navigator.push(
                               context,
@@ -260,13 +259,13 @@ class _AssesmentsScreenState extends State<AssesmentsScreen> {
                                         .trim();
 
                                 // Check statuses
-                                final isAddedGD = assessment['generalDetails']
+                              final bool  isAddedGD = assessment['generalDetails']
                                         ['isAdded'] ??
                                     false;
-                                final isAddedPD = assessment['propertyDetails']
+                              final bool  isAddedPD = assessment['propertyDetails']
                                         ['isAdded'] ??
                                     false;
-                                final isAddedO =
+                              final bool  isAddedO =
                                     assessment['occupancy']['isAdded'] ?? false;
 
                                 // Determine assessment status
@@ -284,6 +283,10 @@ class _AssesmentsScreenState extends State<AssesmentsScreen> {
                                         builder: (context) => ConditionReport(
                                           assessmentId:
                                               snapshot.data!.docs[index].id,
+
+                                        // isAddedGD: isAddedGD,
+                                        // isAddedO: isAddedO,
+                                        // isAddedPD: isAddedPD,
                                         ),
                                       ),
                                     );

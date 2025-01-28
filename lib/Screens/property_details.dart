@@ -1,4 +1,3 @@
-import 'package:condition_report/Screens/condition_report.dart';
 import 'package:condition_report/common_widgets/field_heading.dart';
 import 'package:condition_report/common_widgets/loading_dialog.dart';
 import 'package:condition_report/common_widgets/submit_button.dart';
@@ -158,14 +157,14 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                 ),
               );
             } finally {
-                            Navigator.pop(context);
+              Navigator.pop(context);
 
-              // Close the loading dialog
-              Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ConditionReport(),
-                  ));
+              // // Close the loading dialog
+              // Navigator.pushReplacement(
+              //     context,
+              //     MaterialPageRoute(
+              //       builder: (context) => ConditionReport(),
+              //     ));
             }
 
             // Update the button state to reflect success

@@ -1,4 +1,3 @@
-import 'package:condition_report/Screens/condition_report.dart';
 import 'package:condition_report/common_widgets/field_heading.dart';
 import 'package:condition_report/common_widgets/loading_dialog.dart';
 import 'package:condition_report/common_widgets/submit_button.dart';
@@ -133,11 +132,11 @@ class _OccupancyState extends State<Occupancy> {
               );
             } finally {
               Navigator.pop(context);
-              Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ConditionReport(),
-                  ));
+              // Navigator.pushReplacement(
+              //     context,
+              //     MaterialPageRoute(
+              //       builder: (context) => ConditionReport(),
+              //     ));
             }
           }
         },
@@ -173,6 +172,7 @@ class _OccupancyState extends State<Occupancy> {
                                   heading: "Total Number of Occupants?"),
                               const SizedBox(height: 5),
                               TextFormField(
+                                keyboardType: TextInputType.number,
                                 autovalidateMode:
                                     AutovalidateMode.onUserInteraction,
                                 validator: (String? value) {
@@ -193,6 +193,7 @@ class _OccupancyState extends State<Occupancy> {
                               ),
                               const SizedBox(height: 5),
                               TextFormField(
+                                keyboardType: TextInputType.number,
                                 autovalidateMode:
                                     AutovalidateMode.onUserInteraction,
                                 validator: (String? value) {
@@ -211,6 +212,7 @@ class _OccupancyState extends State<Occupancy> {
                                   heading: "How many of a pensionable age?"),
                               const SizedBox(height: 5),
                               TextFormField(
+                                keyboardType: TextInputType.number,
                                 autovalidateMode:
                                     AutovalidateMode.onUserInteraction,
                                 validator: (String? value) {
@@ -230,6 +232,7 @@ class _OccupancyState extends State<Occupancy> {
                                   heading: "How many with disabilities?"),
                               const SizedBox(height: 5),
                               TextFormField(
+                                keyboardType: TextInputType.number,
                                 autovalidateMode:
                                     AutovalidateMode.onUserInteraction,
                                 validator: (String? value) {
