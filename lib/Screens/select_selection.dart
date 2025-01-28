@@ -1,10 +1,8 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:condition_report/Screens/photo_stream.dart';
 import 'package:condition_report/provider/assessment_provider.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class SelectSelctionScreen extends StatefulWidget {
   const SelectSelctionScreen({super.key});
@@ -41,21 +39,7 @@ class _SelectSelctionScreenState extends State<SelectSelctionScreen> {
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.white,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => PhotoStreamScreen(),
-              ),
-            );
-          },
-          icon: SvgPicture.asset(
-            "assets/images/Icon (2).svg",
-            height: 24,
-            width: 24,
-          ),
-        ),
+        
         title: const Text(
           "Select Selection",
           style: TextStyle(

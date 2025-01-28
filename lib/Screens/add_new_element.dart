@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'package:condition_report/Screens/outstanding_photos..dart';
 import 'package:condition_report/Screens/photo_stream.dart';
+import 'package:condition_report/common_widgets/loading_dialog.dart';
+import 'package:condition_report/common_widgets/submit_button.dart';
 import 'package:condition_report/models/new_element_model.dart';
 import 'package:condition_report/services/firestore_services.dart';
 import 'package:flutter/cupertino.dart';
@@ -265,77 +267,65 @@ class _AddNewElementState extends State<AddNewElement> {
             ),
           ),
         ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(
-              right: 24,
-            ),
-            child: IconButton(
-              padding: const EdgeInsets.all(0.0),
-              color: const Color.fromRGBO(57, 55, 56, 1),
-              onPressed: () {},
-              icon: Image.asset(
-                "assets/images/Filters (1).png",
-                scale: 1.0,
-              ),
-            ),
-          ),
-        ],
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(left: 32, right: 32, bottom: 20),
-        child: Container(
-          height: 60,
-          width: 364,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(100),
-          ),
-          child: FilledButton(
-            style: ButtonStyle(
-              backgroundColor: WidgetStateProperty.all<Color>(
-                const Color.fromRGBO(98, 98, 98, 1),
-              ),
-            ),
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                _formKey.currentState!.save();
+      bottomNavigationBar: SubmitButton(
+        onPressed: () {
+          if (_formKey.currentState!.validate()) {
+            _formKey.currentState!.save();
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => const LoadingDialog(),
+            );
 
-                FireStoreServices().createNewElement(
-                  elementNameController.text.trim(),
-                  NewElementModel(
-                    conditionSummaryText:
-                        conditionSummaryController.text.trim(),
-                    elementName: elementNameController.text.trim(),
-                    isDamp: isDamp ?? "",
-                    isExistingVentilation: isExistingVentilation ?? "",
-                    isFanFitted: isFanFitted ?? "",
-                    isFluedHeating: isFluedHeating ?? "",
-                    isGapInUnderCut: isGapInUnderCut ?? "",
-                    isTrickleEvent: isTrickleEvent ?? "",
-                    isUnderCut: isUnderCut ?? "",
-                    isWindow: isWindow ?? "",
-                    selectedElement: selectedElement ?? "",
-                    selectedElementType: selectedElementType ?? "",
-                    additionalNotes: addNotesController.text.trim(),
-                    conditionSummaryImage: conditionSummaryImage ?? [],
-                    internalDoorImage: internalDoorImage ?? [],
-                    trickleEventImage: trickleEventImage ?? [],
+            try {
+              FireStoreServices().createNewElement(
+                elementNameController.text.trim(),
+                NewElementModel(
+                  conditionSummaryText: conditionSummaryController.text.trim(),
+                  elementName: elementNameController.text.trim(),
+                  isDamp: isDamp ?? "",
+                  isExistingVentilation: isExistingVentilation ?? "",
+                  isFanFitted: isFanFitted ?? "",
+                  isFluedHeating: isFluedHeating ?? "",
+                  isGapInUnderCut: isGapInUnderCut ?? "",
+                  isTrickleEvent: isTrickleEvent ?? "",
+                  isUnderCut: isUnderCut ?? "",
+                  isWindow: isWindow ?? "",
+                  selectedElement: selectedElement ?? "",
+                  selectedElementType: selectedElementType ?? "",
+                  additionalNotes: addNotesController.text.trim(),
+                  conditionSummaryImage: conditionSummaryImage ?? [],
+                  internalDoorImage: internalDoorImage ?? [],
+                  trickleEventImage: trickleEventImage ?? [],
+                ),
+              );
+              // Show success message
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("Operation Successful!"),
+                  backgroundColor: Colors.green,
+                ),
+              );
+              Navigator.pop(context); // Close loading dialog
+            } catch (e) {
+              // Show error message if something goes wrong
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    "Error: $e",
+                    style: const TextStyle(color: Colors.black),
                   ),
-                );
-              }
-            },
-            child: const Text(
-              "Submit",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 16,
-                fontStyle: FontStyle.normal,
-                fontWeight: FontWeight.w600,
-                color: Color.fromRGBO(255, 255, 255, 1),
-              ),
-            ),
-          ),
-        ),
+                  backgroundColor: Colors.red,
+                  duration: const Duration(seconds: 2),
+                ),
+              );
+            } finally {
+              Navigator.pop(context);
+            }
+          }
+        },
+        text: "Submit",
       ),
       body: SingleChildScrollView(
         child: Column(

@@ -544,7 +544,7 @@ class _ConditionReportState extends State<ConditionReport> {
                                           1), // "Added" state color
                                     ),
                                     child: Text(
-                                      "Added",
+                                      "Added ",
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                         color: Colors.white,
@@ -1085,8 +1085,8 @@ class _ConditionReportState extends State<ConditionReport> {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(builder: (context) {
-                                            log(text.value.toString());
-                                            return AddNewElement(map: text.value);
+                                            return AddNewElement(
+                                                map: text.value);
                                           }),
                                         );
                                       } catch (e) {
@@ -1099,6 +1099,7 @@ class _ConditionReportState extends State<ConditionReport> {
                                       }
                                     },
                                     child: Container(
+                                      margin: EdgeInsets.only(bottom: 10),
                                       width: 364,
                                       decoration: const BoxDecoration(
                                         border: Border(
@@ -1163,98 +1164,26 @@ class _ConditionReportState extends State<ConditionReport> {
                                             ),
                                             borderRadius:
                                                 BorderRadius.circular(6.2),
-                                            color: isAddedPD
-                                                ? const Color.fromRGBO(
-                                                    37,
-                                                    144,
-                                                    240,
-                                                    1) // "Added" state color
-                                                : const Color.fromRGBO(
-                                                    37,
-                                                    144,
-                                                    240,
-                                                    0.1), // Initial state color
+                                            color: const Color.fromRGBO(37, 144,
+                                                240, 1), // "Added" state color
                                           ),
                                           child: CupertinoButton(
                                             padding: const EdgeInsets.all(0),
                                             onPressed: () {},
-                                            // async {
-                                            //   // Navigate to PropertyDetails and wait for the result
-                                            //   final result = await Navigator.push(
-                                            //     context,
-                                            //     MaterialPageRoute(
-                                            //       builder: (context) =>
-                                            //           PropertyDetails(), // Navigate to PropertyDetails screen
-                                            //     ),
-                                            //   );
-
-                                            //   // Check if the result is 'true' (indicating successful save)
-                                            //   if (result == true) {
-                                            //     setState(() {
-                                            //       isAdded =
-                                            //           true; // Change the button to "Added"
-                                            //       print(
-                                            //           "Item added successfully, button state updated.");
-                                            //     });
-                                            //   } else {
-                                            //     print("No item added.");
-                                            //   }
-                                            // },
-                                            child: isAddedPD
-                                                ? const SizedBox(
-                                                    height: 17,
-                                                    child: Text(
-                                                      "Added",
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      style: TextStyle(
-                                                        color: Color.fromRGBO(
-                                                            255, 255, 255, 1),
-                                                        fontSize: 14,
-                                                        fontStyle:
-                                                            FontStyle.normal,
-                                                        fontWeight:
-                                                            FontWeight.w300,
-                                                      ),
-                                                    ),
-                                                  )
-                                                : Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      SvgPicture.asset(
-                                                        "assets/images/Group 1353.svg",
-                                                        height: 10,
-                                                        width: 10,
-                                                        color: const Color
-                                                            .fromRGBO(
-                                                            37, 144, 240, 1),
-                                                      ),
-                                                      const SizedBox(width: 5),
-                                                      const SizedBox(
-                                                        height: 17,
-                                                        child: Text(
-                                                          "Add",
-                                                          textAlign:
-                                                              TextAlign.center,
-                                                          style: TextStyle(
-                                                            color:
-                                                                Color.fromRGBO(
-                                                                    37,
-                                                                    144,
-                                                                    240,
-                                                                    1),
-                                                            fontSize: 14,
-                                                            fontStyle: FontStyle
-                                                                .normal,
-                                                            fontWeight:
-                                                                FontWeight.w300,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
+                                            child: const SizedBox(
+                                              height: 17,
+                                              child: Text(
+                                                "Added",
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  color: Color.fromRGBO(
+                                                      255, 255, 255, 1),
+                                                  fontSize: 14,
+                                                  fontStyle: FontStyle.normal,
+                                                  fontWeight: FontWeight.w300,
+                                                ),
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       ),

@@ -138,7 +138,6 @@ class _PropertyDetailsState extends State<PropertyDetails> {
               );
 
               // Show success message
-              // Show success Snackbar
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text("Operation Successful!"),
