@@ -33,7 +33,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
   final List<String> items2 = ['Item 1', 'Item 2', 'Item 3'];
   bool _isLoading = true; // Added for loading state
 
-  int selectedTag = -1;
+  List<int> selectedTags = [];
   List<String> options = [
     "Conventional",
     "Traditional",
@@ -61,15 +61,23 @@ class _PropertyDetailsState extends State<PropertyDetails> {
             widget.initialData?['propertyDetachment']?.toString();
         selectedExposureZone = widget.initialData?['exposureZone']?.toString();
 
-        // Ensure selectedTag is initialized properly
-        selectedTag = options.indexWhere(
-            (option) => option == widget.initialData?['propertyConstruction']);
+        // Initialize selectedTags list
+        selectedTags.clear();
 
-        if (selectedTag == -1 &&
-            widget.initialData?['propertyConstruction'] != null) {
-          // Handle fallback in case the value isn't in the options list
-          options.add(widget.initialData?['propertyConstruction']);
-          selectedTag = options.length - 1; // Set to the new index
+        if (widget.initialData?['propertyConstruction'] != null) {
+          List<String> initialSelections = List<String>.from(
+              widget.initialData?['propertyConstruction'] ?? []);
+
+          for (var item in initialSelections) {
+            int index = options.indexOf(item);
+            if (index != -1) {
+              selectedTags.add(index);
+            } else {
+              // Add new options if they don't exist
+              options.add(item);
+              selectedTags.add(options.length - 1);
+            }
+          }
         }
 
         _isLoading = false;
@@ -114,11 +122,11 @@ class _PropertyDetailsState extends State<PropertyDetails> {
           if (formKey.currentState!.validate()) {
             formKey.currentState!.save();
 
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) => const LoadingDialog(),
-            );
+            // showDialog(
+            //   context: context,
+            //   barrierDismissible: false,
+            //   builder: (context) => const LoadingDialog(),
+            // );
 
             try {
               // Upload property details to Firebase
@@ -130,19 +138,20 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                   exposureZone: selectedExposureZone ?? "",
                   propertyConstraint:
                       _propertyContstraintController.text.trim(),
-                  propertyConstruction: options[selectedTag],
+                  propertyConstruction:
+                      selectedTags.map((index) => options[index]).toList(),
                   propertyDetachment: selectedPropertyDetachment ?? "",
                   isAdded: true,
                 ),
               );
 
               // Show success message
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text("Operation Successful!"),
-                  backgroundColor: Colors.green,
-                ),
-              );
+              // ScaffoldMessenger.of(context).showSnackBar(
+              //   SnackBar(
+              //     content: Text("Operation Successful!"),
+              //     backgroundColor: Colors.green,
+              //   ),
+              // );
               Navigator.pop(context); // Close loading dialog
             } catch (e) {
               // Show error message if something goes wrong
@@ -246,20 +255,20 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                 TextFormField(
                                   autovalidateMode:
                                       AutovalidateMode.onUserInteraction,
-                                  onTap: () {},
                                   readOnly: true,
                                   textAlign: TextAlign.start,
                                   validator: (String? value) {
-                                    if (selectedTag == -1) {
-                                      return 'Please select an option';
+                                    if (selectedTags.isEmpty) {
+                                      return 'Please select at least one option';
                                     }
                                     return null;
                                   },
                                   decoration: InputDecoration(
-                                    hintText: selectedTag == -1
+                                    hintText: selectedTags.isEmpty
                                         ? "No option selected"
-                                        : options[
-                                            selectedTag], // Display preloaded value
+                                        : selectedTags
+                                            .map((index) => options[index])
+                                            .join(", "),
                                   ),
                                 ),
                                 const SizedBox(height: 5),
@@ -271,10 +280,14 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                       return ChoiceChip(
                                         label: Text(options[index]),
                                         showCheckmark: false,
-                                        selected: selectedTag == index,
+                                        selected: selectedTags.contains(index),
                                         onSelected: (bool value) {
                                           setState(() {
-                                            selectedTag = value ? index : -1;
+                                            if (value) {
+                                              selectedTags.add(index);
+                                            } else {
+                                              selectedTags.remove(index);
+                                            }
                                           });
                                         },
                                         backgroundColor: const Color.fromRGBO(
@@ -282,7 +295,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                         selectedColor: const Color.fromRGBO(
                                             37, 144, 240, 0.1),
                                         labelStyle: TextStyle(
-                                          color: selectedTag == index
+                                          color: selectedTags.contains(index)
                                               ? const Color.fromRGBO(
                                                   37, 144, 240, 1)
                                               : const Color.fromRGBO(
@@ -296,7 +309,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                           borderRadius:
                                               BorderRadius.circular(100),
                                           side: BorderSide(
-                                            color: selectedTag == index
+                                            color: selectedTags.contains(index)
                                                 ? const Color.fromRGBO(
                                                     37, 144, 240, 1)
                                                 : const Color.fromRGBO(

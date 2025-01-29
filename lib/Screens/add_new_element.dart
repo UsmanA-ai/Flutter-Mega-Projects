@@ -1,11 +1,15 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 import 'package:condition_report/Screens/outstanding_photos..dart';
 import 'package:condition_report/Screens/photo_stream.dart';
 import 'package:condition_report/common_widgets/loading_dialog.dart';
 import 'package:condition_report/common_widgets/submit_button.dart';
+import 'package:condition_report/models/image_detail.dart';
 import 'package:condition_report/models/new_element_model.dart';
+import 'package:condition_report/provider/assessment_provider.dart';
 import 'package:condition_report/services/firestore_services.dart';
+import 'package:condition_report/services/supabase_services.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -269,14 +273,14 @@ class _AddNewElementState extends State<AddNewElement> {
         ),
       ),
       bottomNavigationBar: SubmitButton(
-        onPressed: () {
+        onPressed: () async {
           if (_formKey.currentState!.validate()) {
             _formKey.currentState!.save();
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) => const LoadingDialog(),
-            );
+            // showDialog(
+            //   context: context,
+            //   barrierDismissible: false,
+            //   builder: (context) => const LoadingDialog(),
+            // );
 
             try {
               FireStoreServices().createNewElement(
@@ -300,13 +304,81 @@ class _AddNewElementState extends State<AddNewElement> {
                   trickleEventImage: trickleEventImage ?? [],
                 ),
               );
+
+              if (camera1Images.isNotEmpty) {
+                await Future.wait(
+                  camera1Images.map((imagePath) async {
+                    String? url = await SupabaseServices()
+                        .uploadImageToSupabase(context, imagePath);
+
+                    if (url != null) {
+                      await FireStoreServices().addImage(
+                        currentId!,
+                        ImageDetail(
+                          id: "${elementNameController.text.trim()}1",
+                          location: elementNameController.text.trim(),
+                          path: url,
+                          subSelection: "Sub Selection",
+                        ),
+                      );
+                    } else {
+                      log('Image upload failed for: $imagePath');
+                    }
+                  }).toList(), // ✅ Convert iterable to List<Future>
+                );
+              }
+              if (camera2Images.isNotEmpty) {
+                await Future.wait(
+                  camera2Images.map((imagePath) async {
+                    String? url = await SupabaseServices()
+                        .uploadImageToSupabase(context, imagePath);
+
+                    if (url != null) {
+                      await FireStoreServices().addImage(
+                        currentId!,
+                        ImageDetail(
+                          id: "${elementNameController.text.trim()}2",
+                          location: elementNameController.text.trim(),
+                          path: url,
+                          subSelection: "Sub Selection",
+                        ),
+                      );
+                    } else {
+                      log('Image upload failed for: $imagePath');
+                    }
+                  }).toList(), // ✅ Convert iterable to List<Future>
+                );
+              }
+              if (camera3Images.isNotEmpty) {
+                await Future.wait(
+                  camera3Images.map((imagePath) async {
+                    String? url = await SupabaseServices()
+                        .uploadImageToSupabase(context, imagePath);
+
+                    if (url != null) {
+                      await FireStoreServices().addImage(
+                        currentId!,
+                        ImageDetail(
+                          id: "${elementNameController.text.trim()}3",
+                          location: elementNameController.text.trim(),
+                          path: url,
+                          subSelection: "Sub Selection",
+                        ),
+                      );
+                    } else {
+                      log('Image upload failed for: $imagePath');
+                    }
+                  }).toList(), // ✅ Convert iterable to List<Future>
+                );
+              }
+
               // Show success message
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text("Operation Successful!"),
-                  backgroundColor: Colors.green,
-                ),
-              );
+              // ScaffoldMessenger.of(context).showSnackBar(
+              //   SnackBar(
+              //     content: Text("Operation Successful!"),
+              //     backgroundColor: Colors.green,
+              //   ),
+              // );
               Navigator.pop(context); // Close loading dialog
             } catch (e) {
               // Show error message if something goes wrong

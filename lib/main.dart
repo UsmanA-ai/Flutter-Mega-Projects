@@ -1,4 +1,5 @@
 import 'package:condition_report/MainScreens/assesments.dart';
+import 'package:condition_report/StartupScreens/splashscreen.dart';
 import 'package:condition_report/firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -27,8 +28,8 @@ class MyApp extends StatelessWidget {
       title: "Condition Report Go",
       debugShowCheckedModeBanner: false,
       // This is your signup screen
-      home: AssesmentsScreen(),
-      // home: Splashscreen(),
+      // home: AssesmentsScreen(),
+      home: Splashscreen(),
       // home: ConditionReport(),
       theme: ThemeData(
           inputDecorationTheme: InputDecorationTheme(

@@ -21,6 +21,7 @@ class _AssesmentsScreenState extends State<AssesmentsScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
         title: Text("Assessments",
             textAlign: TextAlign.center,
@@ -123,7 +124,6 @@ class _AssesmentsScreenState extends State<AssesmentsScreen> {
                             ),
                           ),
                           onPressed: () {
-                            
                             FireStoreServices().createAssessment();
                             Navigator.push(
                               context,
@@ -259,13 +259,13 @@ class _AssesmentsScreenState extends State<AssesmentsScreen> {
                                         .trim();
 
                                 // Check statuses
-                              final bool  isAddedGD = assessment['generalDetails']
-                                        ['isAdded'] ??
-                                    false;
-                              final bool  isAddedPD = assessment['propertyDetails']
-                                        ['isAdded'] ??
-                                    false;
-                              final bool  isAddedO =
+                                final bool isAddedGD =
+                                    assessment['generalDetails']['isAdded'] ??
+                                        false;
+                                final bool isAddedPD =
+                                    assessment['propertyDetails']['isAdded'] ??
+                                        false;
+                                final bool isAddedO =
                                     assessment['occupancy']['isAdded'] ?? false;
 
                                 // Determine assessment status
@@ -284,9 +284,9 @@ class _AssesmentsScreenState extends State<AssesmentsScreen> {
                                           assessmentId:
                                               snapshot.data!.docs[index].id,
 
-                                        // isAddedGD: isAddedGD,
-                                        // isAddedO: isAddedO,
-                                        // isAddedPD: isAddedPD,
+                                          // isAddedGD: isAddedGD,
+                                          // isAddedO: isAddedO,
+                                          // isAddedPD: isAddedPD,
                                         ),
                                       ),
                                     );

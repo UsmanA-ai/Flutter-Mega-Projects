@@ -36,6 +36,7 @@ class _ActionsScreenState extends State<ActionsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
           title: const Center(
             child: Padding(
@@ -122,7 +123,7 @@ class _ActionsScreenState extends State<ActionsScreen> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            Navigator.pushReplacement(
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => const Settings()),

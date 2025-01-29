@@ -20,35 +20,6 @@ class _SettingsState extends State<Settings> {
           centerTitle: true,
           elevation: 0,
           backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
-          leading: Padding(
-            padding: const EdgeInsets.only(
-              left: 24,
-              top: 20,
-              bottom: 12,
-            ),
-            child: SizedBox(
-              height: 24,
-              width: 24,
-              child: IconButton(
-                padding: const EdgeInsets.all(0.0),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const Navigationbar(
-                            // Navigator.push(context, MaterialPageRoute(builder: (context) => const ActionsScreen(),)),
-                            )),
-                  );
-                  // Navigator.pop(context);
-                },
-                icon: SvgPicture.asset(
-                  "assets/images/Icon (2).svg",
-                  height: 24,
-                  width: 24,
-                ),
-              ),
-            ),
-          ),
           title: const Padding(
             padding: EdgeInsets.only(top: 20, bottom: 12),
             child: Text(

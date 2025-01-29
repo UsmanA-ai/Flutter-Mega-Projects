@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:condition_report/common_widgets/field_heading.dart';
-import 'package:condition_report/common_widgets/loading_dialog.dart';
 import 'package:condition_report/common_widgets/submit_button.dart';
 import 'package:condition_report/models/general_details_model.dart';
 import 'package:condition_report/models/image_detail.dart';
@@ -53,12 +52,25 @@ class _GeneralDetailsState extends State<GeneralDetails> {
   final ImagePicker _picker = ImagePicker();
   List<String> imagePaths = [];
   List<DateTime> imageDates = [];
+  int imgCount = 0;
   String? selectedImagePath;
   bool isLoading = false; // Track loading state for editing
+
+  fetchGD() async {
+    final img = await FireStoreServices().fetchGDImages();
+    imgCount = img.length;
+
+    img.isEmpty
+        ? []
+        : imagePaths = img.map((i) => i['path'] as String).toList();
+    // log(imagePaths.toString());
+    setState(() {});
+  }
 
   @override
   void initState() {
     super.initState();
+    // fetchGD();
 
     if (widget.initialData != null) {
       setState(() {
@@ -166,11 +178,11 @@ class _GeneralDetailsState extends State<GeneralDetails> {
           if (formKey.currentState!.validate()) {
             formKey.currentState!.save();
             // Show the loading dialog
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) => const LoadingDialog(),
-            );
+            // showDialog(
+            //   context: context,
+            //   barrierDismissible: false,
+            //   builder: (context) => const LoadingDialog(),
+            // );
             try {
               // Upload General Details to Firestore
               await FireStoreServices().addGeneralDetails(
@@ -198,47 +210,39 @@ class _GeneralDetailsState extends State<GeneralDetails> {
                   // Use Future.wait for concurrent uploads
                   await Future.wait(
                     imagePaths.map((imagePath) async {
-                      log('Uploading image: $imagePath');
-
-                      // Upload image to Supabase and get the public URL
                       String? url = await SupabaseServices()
                           .uploadImageToSupabase(context, imagePath);
 
                       if (url != null) {
-                        log('Image uploaded successfully: $url');
-
-                        // Save image details to Firestore
                         await FireStoreServices().addImage(
                           currentId!,
                           ImageDetail(
+                            id: "gd",
                             location: "General Details",
                             path: url,
                             subSelection: "Sub Selection",
                           ),
                         );
-                        log('Image details saved to Firestore');
                       } else {
                         log('Image upload failed for: $imagePath');
                       }
                     }),
                   );
-
-                  log('All images uploaded and details saved successfully.');
                 } catch (e) {
                   log('Error during upload or save: $e');
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("An error occurred: $e")),
-                  );
+                  // ScaffoldMessenger.of(context).showSnackBar(
+                  //   SnackBar(content: Text("An error occurred: $e")),
+                  // );
                 }
               }
 
               // Show success Snackbar
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text("Operation Successful!"),
-                  backgroundColor: Colors.green,
-                ),
-              );
+              // ScaffoldMessenger.of(context).showSnackBar(
+              //   SnackBar(
+              //     content: Text("Operation Successful!"),
+              //     backgroundColor: Colors.green,
+              //   ),
+              // );
               Navigator.pop(context);
             } catch (e) {
               // Show error message
@@ -340,6 +344,7 @@ class _GeneralDetailsState extends State<GeneralDetails> {
                                   runSpacing: 5,
                                   children:
                                       List.generate(imagePaths.length, (index) {
+                                    log(imagePaths.length.toString());
                                     return SizedBox(
                                       height: 36,
                                       width: 36,
@@ -430,7 +435,7 @@ class _GeneralDetailsState extends State<GeneralDetails> {
                           const SizedBox(height: 16),
                           FieldHeading(heading: "Regs Region"),
                           const SizedBox(height: 5),
-                          DropdownButtonFormField<String>(
+                          DropdownButtonFormField2<String>(
                             autovalidateMode:
                                 AutovalidateMode.onUserInteraction,
                             validator: (String? value) {
@@ -440,10 +445,63 @@ class _GeneralDetailsState extends State<GeneralDetails> {
                               }
                               return null; // Return null if input is valid
                             },
-
-                            value: selectedRegion,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: const BorderSide(
+                                  color: Color(0X19626262),
+                                  width: 2,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(
+                                  16,
+                                ),
+                                borderSide: const BorderSide(
+                                  color: Color(0X19626262),
+                                  width: 2,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(
+                                  16,
+                                ),
+                                borderSide: const BorderSide(
+                                  color: Color(0X19626262),
+                                  width: 2,
+                                ),
+                              ),
+                              disabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(
+                                  16,
+                                ),
+                                borderSide: const BorderSide(
+                                  color: Color(0X19626262),
+                                  width: 2,
+                                ),
+                              ),
+                              isDense: true,
+                              contentPadding: const EdgeInsets.only(
+                                  left: 0, right: 16, top: 18, bottom: 18),
+                            ),
                             isExpanded: true,
                             isDense: true,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontStyle: FontStyle.normal,
+                              fontWeight: FontWeight.w300,
+                              color: Color.fromRGBO(57, 55, 56, 1),
+                            ),
+                            dropdownStyleData: DropdownStyleData(
+                              decoration: BoxDecoration(
+                                color: const Color.fromRGBO(255, 255, 255, 1),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
+
+                            value: selectedRegion,
+                            // isExpanded: true,
+                            // isDense: true,
                             hint: Text("Select a region"), // Placeholder text
                             items: region
                                 .map(

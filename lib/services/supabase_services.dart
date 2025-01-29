@@ -22,41 +22,17 @@ class SupabaseServices {
   Future<String?> uploadImageToSupabase(
       BuildContext context, String imagePath) async {
     final file = File(imagePath);
-
-    // Validate the file existence and size
-    // if (!await file.exists()) {
-    //   log('File not found at path: $imagePath');
-    //   throw Exception('File not found');
-    // }
-
-    // final fileSize = await file.length();
-    // if (fileSize == 0) {
-    //   log('File is empty at path: $imagePath');
-    //   throw Exception('File is empty');
-    // }
-
-    // Read file bytes
-    log('Reading file...');
     final fileBytes = await file.readAsBytes();
-    log('File read successfully');
-
-    // Generate unique file path
     final fileName = DateTime.now().millisecondsSinceEpoch.toString();
     final path = 'images/$fileName.jpg';
 
-    // Upload file to Supabase
-    log('Uploading file to Supabase...');
     await _supabaseClient.storage.from('Images').uploadBinary(
           path,
           fileBytes,
           fileOptions: const FileOptions(upsert: false),
         );
-    log('File uploaded successfully to: $path');
 
-    // Get public URL for the uploaded file
     final publicUrl = _supabaseClient.storage.from('Images').getPublicUrl(path);
-    log('Generated public URL: $publicUrl');
-
     return publicUrl;
   }
 

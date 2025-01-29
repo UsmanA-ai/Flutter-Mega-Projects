@@ -35,11 +35,11 @@ class _SelectSelctionScreenState extends State<SelectSelctionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.white,
-        
         title: const Text(
           "Select Selection",
           style: TextStyle(
@@ -87,10 +87,55 @@ class _SelectSelctionScreenState extends State<SelectSelctionScreen> {
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
-                    borderSide: const BorderSide(color: Color(0X19626262)),
+                    borderSide: const BorderSide(
+                      color: Color(0X19626262),
+                      width: 2,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(
+                      16,
+                    ),
+                    borderSide: const BorderSide(
+                      color: Color(0X19626262),
+                      width: 2,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(
+                      16,
+                    ),
+                    borderSide: const BorderSide(
+                      color: Color(0X19626262),
+                      width: 2,
+                    ),
+                  ),
+                  disabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(
+                      16,
+                    ),
+                    borderSide: const BorderSide(
+                      color: Color(0X19626262),
+                      width: 2,
+                    ),
                   ),
                   isDense: true,
-                  contentPadding: const EdgeInsets.all(12),
+                  contentPadding: const EdgeInsets.only(
+                      left: 0, right: 16, top: 18, bottom: 18),
+                ),
+                isExpanded: true,
+                isDense: true,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontStyle: FontStyle.normal,
+                  fontWeight: FontWeight.w300,
+                  color: Color.fromRGBO(57, 55, 56, 1),
+                ),
+                dropdownStyleData: DropdownStyleData(
+                  decoration: BoxDecoration(
+                    color: const Color.fromRGBO(255, 255, 255, 1),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                 ),
               ),
               if (button == 'Add own element')
@@ -133,10 +178,55 @@ class _SelectSelctionScreenState extends State<SelectSelctionScreen> {
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
-                    borderSide: const BorderSide(color: Color(0X19626262)),
+                    borderSide: const BorderSide(
+                      color: Color(0X19626262),
+                      width: 2,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(
+                      16,
+                    ),
+                    borderSide: const BorderSide(
+                      color: Color(0X19626262),
+                      width: 2,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(
+                      16,
+                    ),
+                    borderSide: const BorderSide(
+                      color: Color(0X19626262),
+                      width: 2,
+                    ),
+                  ),
+                  disabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(
+                      16,
+                    ),
+                    borderSide: const BorderSide(
+                      color: Color(0X19626262),
+                      width: 2,
+                    ),
                   ),
                   isDense: true,
-                  contentPadding: const EdgeInsets.all(12),
+                  contentPadding: const EdgeInsets.only(
+                      left: 0, right: 16, top: 18, bottom: 18),
+                ),
+                isExpanded: true,
+                isDense: true,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontStyle: FontStyle.normal,
+                  fontWeight: FontWeight.w300,
+                  color: Color.fromRGBO(57, 55, 56, 1),
+                ),
+                dropdownStyleData: DropdownStyleData(
+                  decoration: BoxDecoration(
+                    color: const Color.fromRGBO(255, 255, 255, 1),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                 ),
               ),
             ],

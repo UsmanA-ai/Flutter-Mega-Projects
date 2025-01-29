@@ -19,6 +19,7 @@ class FireStoreServices {
       ids.add(docRef.id);
       currentId = docRef.id;
       await docRef.set({
+        'createdAt': FieldValue.serverTimestamp(),
         "generalDetails": {}, // Initialize empty maps for the fields
         "propertyDetails": {},
         "occupancy": {},
@@ -65,9 +66,9 @@ class FireStoreServices {
         "images":
             FieldValue.arrayUnion([imageDetail.toMap()]), // Add to the list
       });
-      print("Image detail added successfully to Firestore.");
+      log("Image detail added successfully to Firestore.");
     } catch (e) {
-      print("Error adding image detail to Firestore: $e");
+      log("Error adding image detail to Firestore: $e");
       throw Exception(e.toString());
     }
   }
@@ -112,12 +113,15 @@ class FireStoreServices {
     }
   }
 
+  // Fetch all assessments ordered by 'createdAt'
   Stream<QuerySnapshot<Map<String, dynamic>>> fetchAllAssessments() {
     try {
-      // log(_firebaseAssessment.snapshots().toString());
-      return _firebaseAssessment.snapshots();
+      // Fetch the assessments and order them by 'createdAt' in descending order
+      return _firebaseAssessment
+          .orderBy('createdAt', descending: true) // Order by createdAt field
+          .snapshots(); // Listen for real-time updates
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception("Error fetching assessments: ${e.toString()}");
     }
   }
 
@@ -130,13 +134,92 @@ class FireStoreServices {
     }
   }
 
-  // Delete an assessment by its ID
   Future<void> deleteAssessment(String assessmentId) async {
     try {
       await _firebaseAssessment.doc(assessmentId).delete();
       log('Assessment deleted successfully');
     } catch (e) {
       throw Exception("Error deleting assessment: ${e.toString()}");
+    }
+  }
+
+  Stream<List<Map<String, dynamic>>> fetchPhotoStreamImages() {
+    try {
+      return _firebaseAssessment
+          .doc(currentId)
+          .snapshots()
+          .map((documentSnapshot) {
+        if (documentSnapshot.exists) {
+          Map<String, dynamic>? data = documentSnapshot.data();
+          List<dynamic>? imagesList = data?["images"] as List<dynamic>?;
+          // log("ImageList : $imagesList");
+          if (imagesList != null) {
+            List<Map<String, dynamic>> filteredImages = imagesList
+                .where((image) =>
+                    image is Map<String, dynamic> && image["id"] == "ps")
+                .map((image) => image as Map<String, dynamic>)
+                .toList();
+
+            // log("Filter Data : $filteredImages");
+            return filteredImages;
+          }
+        }
+        return [];
+      });
+    } catch (e) {
+      log("Error fetching images: $e");
+      return Stream.value([]);
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchGDImages() async {
+    try {
+      var documentSnapshot = await _firebaseAssessment.doc(currentId).get();
+
+      if (documentSnapshot.exists) {
+        Map<String, dynamic>? data = documentSnapshot.data();
+        List<dynamic>? imagesList = data?["images"] as List<dynamic>?;
+
+        if (imagesList != null) {
+          List<Map<String, dynamic>> filteredImages = imagesList
+              .where((image) =>
+                  image is Map<String, dynamic> && image["id"] == "gd")
+              .map((image) => image as Map<String, dynamic>)
+              .toList();
+
+          return filteredImages;
+        }
+      }
+      return [];
+    } catch (e) {
+      log("Error fetching images: $e");
+      return [];
+    }
+  }
+
+  Stream<List<String>> fetchAllImages() {
+    try {
+      return _firebaseAssessment
+          .doc(currentId)
+          .snapshots()
+          .map((documentSnapshot) {
+        List<String> allImages = [];
+
+        Map<String, dynamic>? data = documentSnapshot.data();
+        List<dynamic>? imagesList = data?["images"] as List<dynamic>?;
+
+        if (imagesList != null) {
+          for (var image in imagesList) {
+            if (image is Map<String, dynamic> && image.containsKey("path")) {
+              allImages.add(image["path"]);
+            }
+          }
+        }
+        return allImages;
+      });
+    } catch (e) {
+      log("Error fetching images: $e");
+      return Stream.value([]);
     }
   }
 }

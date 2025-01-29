@@ -1,6 +1,6 @@
 class PropertyDetailsModel {
   String propertyConstraint;
-  String propertyConstruction;
+  List<String> propertyConstruction;
   String propertyDetachment;
   String buildingOrientation;
   String exposureZone;
@@ -31,7 +31,7 @@ class PropertyDetailsModel {
   factory PropertyDetailsModel.fromMap(Map<String, dynamic> map) {
     return PropertyDetailsModel(
       propertyConstraint: map['propertyConstraint'] ?? '',
-      propertyConstruction: map['propertyConstruction'] ?? '',
+      propertyConstruction: map['propertyConstruction'] ?? [],
       propertyDetachment: map['propertyDetachment'] ?? '',
       buildingOrientation: map['buildingOrientation'] ?? '',
       exposureZone: map['exposureZone'] ?? '',

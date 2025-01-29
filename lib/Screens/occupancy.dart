@@ -93,11 +93,11 @@ class _OccupancyState extends State<Occupancy> {
           if (formKey.currentState!.validate()) {
             formKey.currentState!.save();
 
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) => const LoadingDialog(),
-            );
+            // showDialog(
+            //   context: context,
+            //   barrierDismissible: false,
+            //   builder: (context) => const LoadingDialog(),
+            // );
 
             try {
               // Add or update occupancy details
@@ -115,12 +115,12 @@ class _OccupancyState extends State<Occupancy> {
               );
 
               // Show success Snackbar
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text("Operation Successful!"),
-                  backgroundColor: Colors.green,
-                ),
-              );
+              // ScaffoldMessenger.of(context).showSnackBar(
+              //   SnackBar(
+              //     content: Text("Operation Successful!"),
+              //     backgroundColor: Colors.green,
+              //   ),
+              // );
               Navigator.pop(context); // Close loading dialog
             } catch (e) {
               // Show error Snackbar

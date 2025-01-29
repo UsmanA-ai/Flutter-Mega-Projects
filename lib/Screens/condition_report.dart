@@ -16,16 +16,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ConditionReport extends StatefulWidget {
   final String? assessmentId;
-  // final bool? isAddedGD;
-  // final bool? isAddedPD;
-  // final bool? isAddedO;
 
   const ConditionReport({
     super.key,
     this.assessmentId,
-    // this.isAddedGD = false,
-    // this.isAddedPD = false,
-    // this.isAddedO = false,
   });
 
   @override
@@ -33,8 +27,6 @@ class ConditionReport extends StatefulWidget {
 }
 
 class _ConditionReportState extends State<ConditionReport> {
-  // List<String> imageLength = [];
-  // List<DateTime> imageDates = [];
   final SupabaseClient _supabaseClient = Supabase.instance.client;
   final List<String> _imageUrls = [];
 // Added loading state
@@ -44,6 +36,7 @@ class _ConditionReportState extends State<ConditionReport> {
     super.initState();
     _fetchImages();
     FireStoreServices().fetchAllAssessments();
+    // FireStoreServices().fetchPhotoStreamImages();
     // setState(() {});
     // log("initstate");
   }
@@ -246,121 +239,136 @@ class _ConditionReportState extends State<ConditionReport> {
                                 ),
                               );
                             },
-                            child: Container(
-                              width: 364,
-                              decoration: const BoxDecoration(
-                                border: Border(
-                                  top: BorderSide(
-                                    color: Color.fromRGBO(253, 253, 253, 1),
+                            child: StreamBuilder(
+                              stream:
+                                  FireStoreServices().fetchPhotoStreamImages(),
+                              builder: (context, snapshot) {
+                                final imgs = snapshot.data?.length ?? 0;
+                                if (snapshot.hasError) {
+                                  return Center(
+                                    child: Text('Error: ${snapshot.error}'),
+                                  );
+                                }
+
+                                return Container(
+                                  width: 364,
+                                  decoration: const BoxDecoration(
+                                    border: Border(
+                                      top: BorderSide(
+                                        color: Color.fromRGBO(253, 253, 253, 1),
+                                      ),
+                                      bottom: BorderSide.none,
+                                    ),
                                   ),
-                                  bottom: BorderSide.none,
-                                ),
-                              ),
-                              child: CupertinoFormRow(
-                                padding: EdgeInsets.zero,
-                                prefix: Row(
-                                  children: [
-                                    Stack(
+                                  child: CupertinoFormRow(
+                                    padding: EdgeInsets.zero,
+                                    prefix: Row(
                                       children: [
-                                        Padding(
-                                          padding: const EdgeInsets.all(13.5),
-                                          child: SvgPicture.asset(
-                                            "assets/images/camera.svg",
-                                            height: 24,
-                                            width: 24,
-                                            color: const Color.fromRGBO(
-                                                37, 144, 240, 1),
-                                          ),
+                                        Stack(
+                                          children: [
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(13.5),
+                                              child: SvgPicture.asset(
+                                                "assets/images/camera.svg",
+                                                height: 24,
+                                                width: 24,
+                                                color: const Color.fromRGBO(
+                                                    37, 144, 240, 1),
+                                              ),
+                                            ),
+                                            SvgPicture.asset(
+                                              "assets/images/Group 1259.svg",
+                                              height: 50.5,
+                                              width: 50,
+                                              color: const Color.fromRGBO(
+                                                  37, 144, 240, 1),
+                                              // color: Colors.red,
+                                            ),
+                                          ],
                                         ),
-                                        SvgPicture.asset(
-                                          "assets/images/Group 1259.svg",
-                                          height: 50.5,
-                                          width: 50,
+                                        const SizedBox(width: 20),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              "Photo Stream ",
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontStyle: FontStyle.normal,
+                                                fontWeight: FontWeight.w400,
+                                                color: Color.fromRGBO(
+                                                    57, 55, 56, 1),
+                                              ),
+                                            ),
+                                            Text(
+                                              "($imgs)", // ✅ Show dynamic count here
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontStyle: FontStyle.normal,
+                                                fontWeight: FontWeight.w400,
+                                                color: Color.fromRGBO(
+                                                    57, 55, 56, 0.5),
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                    child: Container(
+                                      width: 56,
+                                      height: 24,
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
                                           color: const Color.fromRGBO(
                                               37, 144, 240, 1),
-                                          // color: Colors.red,
                                         ),
-                                      ],
-                                    ),
-                                    const SizedBox(width: 20),
-                                    Row(
-                                      children: [
-                                        Text(
-                                          "Photo Stream ",
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontStyle: FontStyle.normal,
-                                              fontWeight: FontWeight.w400,
-                                              color: Color.fromRGBO(
-                                                  57, 55, 56, 1)),
-                                        ),
-                                        Text(
-                                          "(${_imageUrls.length})",
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontStyle: FontStyle.normal,
-                                              fontWeight: FontWeight.w400,
-                                              color: Color.fromRGBO(
-                                                  57, 55, 56, 0.5)),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                child: Container(
-                                  width: 56,
-                                  height: 24,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color:
-                                          const Color.fromRGBO(37, 144, 240, 1),
-                                    ),
-                                    borderRadius: BorderRadius.circular(6.2),
-                                    color: _imageUrls.isEmpty
-                                        ? Color.fromRGBO(37, 144, 240, 0.1)
-                                        : Color.fromRGBO(37, 144, 240, 1),
-                                  ),
-                                  child: CupertinoButton(
-                                    padding: const EdgeInsets.all(0),
-                                    onPressed: () {},
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        if (_imageUrls.isEmpty)
-                                          SvgPicture.asset(
-                                            "assets/images/Group 1353.svg",
-                                            height: 10,
-                                            width: 10,
-                                            color: const Color.fromRGBO(
-                                                37, 144, 240, 1),
-                                          ),
-                                        const SizedBox(
-                                          width: 5,
-                                        ),
-                                        SizedBox(
-                                          height: 17,
-                                          child: Text(
-                                            _imageUrls.isEmpty
-                                                ? "Add"
-                                                : "Added",
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              color: _imageUrls.isEmpty
-                                                  ? Color.fromRGBO(
-                                                      37, 144, 240, 1)
-                                                  : Colors.white,
-                                              fontSize: 14,
-                                              fontStyle: FontStyle.normal,
-                                              fontWeight: FontWeight.w300,
+                                        borderRadius:
+                                            BorderRadius.circular(6.2),
+                                        color: imgs == 0
+                                            ? Color.fromRGBO(37, 144, 240, 0.1)
+                                            : Color.fromRGBO(37, 144, 240, 1),
+                                      ),
+                                      child: CupertinoButton(
+                                        padding: const EdgeInsets.all(0),
+                                        onPressed: () {},
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            if (imgs == 0)
+                                              SvgPicture.asset(
+                                                "assets/images/Group 1353.svg",
+                                                height: 10,
+                                                width: 10,
+                                                color: const Color.fromRGBO(
+                                                    37, 144, 240, 1),
+                                              ),
+                                            const SizedBox(
+                                              width: 5,
                                             ),
-                                          ),
+                                            SizedBox(
+                                              height: 17,
+                                              child: Text(
+                                                imgs == 0 ? "Add" : "Added",
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  color: imgs == 0
+                                                      ? Color.fromRGBO(
+                                                          37, 144, 240, 1)
+                                                      : Colors.white,
+                                                  fontSize: 14,
+                                                  fontStyle: FontStyle.normal,
+                                                  fontWeight: FontWeight.w300,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                      ],
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ),
+                                );
+                              },
                             ),
                           ),
                           const SizedBox(
@@ -391,90 +399,145 @@ class _ConditionReportState extends State<ConditionReport> {
                                   ),
                                 ),
                               ),
-                              child: CupertinoFormRow(
-                                padding: EdgeInsets.zero,
-                                prefix: Row(
-                                  children: [
-                                    Stack(
+                              child: StreamBuilder(
+                                stream: FireStoreServices().fetchAllImages(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasError) {
+                                    return Center(
+                                      child: Text(snapshot.error.toString()),
+                                    );
+                                  }
+                                  final imgCount = snapshot.data?.length ?? 0;
+                                  return CupertinoFormRow(
+                                    padding: EdgeInsets.zero,
+                                    prefix: Row(
                                       children: [
-                                        Padding(
-                                          padding: const EdgeInsets.all(13.5),
-                                          child: SvgPicture.asset(
-                                            "assets/images/Photo.svg",
-                                            height: 24,
-                                            width: 24,
-                                            color: const Color.fromRGBO(
-                                                37, 144, 240, 1),
-                                          ),
+                                        Stack(
+                                          children: [
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(13.5),
+                                              child: SvgPicture.asset(
+                                                "assets/images/Photo.svg",
+                                                height: 24,
+                                                width: 24,
+                                                color: const Color.fromRGBO(
+                                                    37, 144, 240, 1),
+                                              ),
+                                            ),
+                                            SvgPicture.asset(
+                                              "assets/images/Group 1259.svg",
+                                              height: 50.5,
+                                              width: 50,
+                                              color: const Color.fromRGBO(
+                                                  37, 144, 240, 1),
+                                              // color: Colors.red,
+                                            ),
+                                          ],
                                         ),
-                                        SvgPicture.asset(
-                                          "assets/images/Group 1259.svg",
-                                          height: 50.5,
-                                          width: 50,
-                                          color: const Color.fromRGBO(
-                                              37, 144, 240, 1),
-                                          // color: Colors.red,
+                                        const SizedBox(width: 20),
+                                        const Text(
+                                          "Outstanding Photos",
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontStyle: FontStyle.normal,
+                                              fontWeight: FontWeight.w400,
+                                              color: Color.fromRGBO(
+                                                  57, 55, 56, 1)),
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(width: 20),
-                                    const Text(
-                                      "Outstanding Photos",
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontStyle: FontStyle.normal,
-                                          fontWeight: FontWeight.w400,
-                                          color: Color.fromRGBO(57, 55, 56, 1)),
-                                    ),
-                                  ],
-                                ),
-                                child: Container(
-                                  width: 56,
-                                  height: 24,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color:
-                                          const Color.fromRGBO(37, 144, 240, 1),
-                                    ),
-                                    borderRadius: BorderRadius.circular(6.2),
-                                    color:
-                                        const Color.fromRGBO(37, 144, 240, 0.1),
-                                  ),
-                                  child: CupertinoButton(
-                                    padding: const EdgeInsets.all(0),
-                                    onPressed: () {},
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        SvgPicture.asset(
-                                          "assets/images/Group 1353.svg",
-                                          height: 10,
-                                          width: 10,
-                                          color: const Color.fromRGBO(
-                                              37, 144, 240, 1),
-                                        ),
-                                        const SizedBox(
-                                          width: 5,
-                                        ),
-                                        const SizedBox(
-                                          height: 17,
-                                          child: Text(
-                                            "Add",
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
+                                    child: imgCount != 0
+                                        ? Container(
+                                            width: 56,
+                                            height: 24,
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                color: Color.fromRGBO(
+                                                    37,
+                                                    144,
+                                                    240,
+                                                    1), // "Added" state color
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(6.2),
                                               color: Color.fromRGBO(
-                                                  37, 144, 240, 1),
-                                              fontSize: 14,
-                                              fontStyle: FontStyle.normal,
-                                              fontWeight: FontWeight.w300,
+                                                  37,
+                                                  144,
+                                                  240,
+                                                  1), // "Added" state color
+                                            ),
+                                            child: Text(
+                                              "Added ",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 14,
+                                                fontStyle: FontStyle.normal,
+                                                fontWeight: FontWeight.w300,
+                                              ),
+                                            ),
+                                          )
+                                        : Container(
+                                            width: 56,
+                                            height: 24,
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                color: const Color.fromRGBO(37,
+                                                    144, 240, 1), // Blue border
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(6.2),
+                                              color: const Color.fromRGBO(
+                                                  37,
+                                                  144,
+                                                  240,
+                                                  0.1), // Blue background
+                                            ),
+                                            child: CupertinoButton(
+                                              padding: const EdgeInsets.all(0),
+                                              onPressed: () {},
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  SvgPicture.asset(
+                                                    "assets/images/Group 1353.svg", // Replace with your add icon
+                                                    height: 10,
+                                                    width: 10,
+                                                    color: const Color.fromRGBO(
+                                                        37,
+                                                        144,
+                                                        240,
+                                                        1), // Blue color
+                                                  ),
+                                                  const SizedBox(width: 5),
+                                                  const SizedBox(
+                                                    height: 17,
+                                                    child: Text(
+                                                      "Add",
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: TextStyle(
+                                                        color: Color.fromRGBO(
+                                                            37,
+                                                            144,
+                                                            240,
+                                                            1), // Blue text
+                                                        fontSize: 14,
+                                                        fontStyle:
+                                                            FontStyle.normal,
+                                                        fontWeight:
+                                                            FontWeight.w300,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
+                                  );
+                                },
                               ),
                             ),
                           ),
@@ -1106,6 +1169,7 @@ class _ConditionReportState extends State<ConditionReport> {
                                       element.key != 'occupancy' &&
                                       element.key != 'images' &&
                                       element.key != 'generalDetails' &&
+                                      element.key != 'createdAt' &&
                                       element.key != 'propertyDetails')
                                   .map(
                                     (entry) => MapEntry(entry.key, entry.value),
