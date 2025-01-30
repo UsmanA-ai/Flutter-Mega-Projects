@@ -1,4 +1,3 @@
-import 'package:condition_report/MainScreens/assesments.dart';
 import 'package:condition_report/StartupScreens/splashscreen.dart';
 import 'package:condition_report/firebase_options.dart';
 import 'package:flutter/material.dart';

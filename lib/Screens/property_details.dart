@@ -1,5 +1,4 @@
 import 'package:condition_report/common_widgets/field_heading.dart';
-import 'package:condition_report/common_widgets/loading_dialog.dart';
 import 'package:condition_report/common_widgets/submit_button.dart';
 import 'package:condition_report/models/property_details_model.dart';
 import 'package:condition_report/provider/assessment_provider.dart';
@@ -166,7 +165,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                 ),
               );
             } finally {
-              Navigator.pop(context);
+              // Navigator.pop(context);
 
               // // Close the loading dialog
               // Navigator.pushReplacement(

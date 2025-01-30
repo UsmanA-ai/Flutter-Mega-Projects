@@ -27,10 +27,50 @@ class _SelectSelctionScreenState extends State<SelectSelctionScreen> {
     'Utility room',
     'External Elevation',
     'Loft',
-    // Add more items here as needed
   ];
   List<String> dropdownItemList1 = ["Sub-item 1", "Sub-item 2", "Sub-item 3"];
   TextEditingController customElementController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchExistingData();
+  }
+
+  // Fetch existing Firestore data and set dropdown values
+  Future<void> _fetchExistingData() async {
+    try {
+      var snapshot = await FirebaseFirestore.instance
+          .collection("users")
+          .doc(uid)
+          .collection('assessment')
+          .doc(currentId)
+          .get();
+
+      if (snapshot.exists) {
+        var data = snapshot.data();
+
+        if (data != null && data.containsKey('images')) {
+          var images = data['images'] as List<dynamic>?;
+
+          if (images != null && images.isNotEmpty) {
+            var firstImage = images.first as Map<String, dynamic>;
+
+            setState(() {
+              button = dropdownItemList.contains(firstImage['location'])
+                  ? firstImage['location']
+                  : null;
+              button1 = dropdownItemList1.contains(firstImage['subSelection'])
+                  ? firstImage['subSelection']
+                  : null;
+            });
+          }
+        }
+      }
+    } catch (e) {
+      log('Error fetching Firestore data: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,12 +88,6 @@ class _SelectSelctionScreenState extends State<SelectSelctionScreen> {
             color: Color.fromRGBO(57, 55, 56, 1),
           ),
         ),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: Image.asset("assets/images/Filters (1).png"),
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -243,27 +277,32 @@ class _SelectSelctionScreenState extends State<SelectSelctionScreen> {
             ),
             minimumSize: const Size(double.infinity, 60),
           ),
-          onPressed: () {
-            // Example Firestore logic
-            FirebaseFirestore.instance
-                .collection("assessment")
-                .doc(currentId) // Replace with actual document ID
-                .get()
-                .then((snapshot) async {
+          onPressed: () async {
+            try {
+              var snapshot = await FirebaseFirestore.instance
+                  .collection("users")
+                  .doc(uid)
+                  .collection('assessment')
+                  .doc(currentId)
+                  .get();
+
               if (snapshot.exists) {
-                var data = snapshot.data() as Map<String, dynamic>;
-                var images = data['images'] as List<dynamic>?;
+                var data = snapshot.data();
+                var images = data?['images'] as List<dynamic>?;
 
                 if (images != null && images.isNotEmpty) {
                   var updatedImages = images.map((image) {
                     if (image is Map<String, dynamic>) {
                       image['location'] = button ?? "Default Location";
+                      image['subSelection'] = button1 ?? "Default Sub Location";
                     }
                     return image;
                   }).toList();
 
                   await FirebaseFirestore.instance
-                      .collection("assessment")
+                      .collection("users")
+                      .doc(uid)
+                      .collection('assessment')
                       .doc(currentId)
                       .update({'images': updatedImages});
 
@@ -274,9 +313,10 @@ class _SelectSelctionScreenState extends State<SelectSelctionScreen> {
               } else {
                 log('Document does not exist.');
               }
-            }).catchError((error) {
+              Navigator.pop(context);
+            } catch (error) {
               log('Error updating data: $error');
-            });
+            }
           },
           child: const Text(
             "Save",

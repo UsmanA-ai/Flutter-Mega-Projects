@@ -1,4 +1,5 @@
 import 'package:condition_report/MainScreens/navigationbar.dart';
+import 'package:condition_report/Screens/forgot_password.dart';
 import 'package:condition_report/StartupScreens/signup.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -75,7 +76,6 @@ class _SignInScreen extends State<SignInScreen> {
                       height: 74.2,
                       child: SvgPicture.asset(
                         "assets/images/logo-svg.svg",
-                        
                         color: const Color.fromRGBO(92, 148, 155, 1),
                       ),
                     ),
@@ -302,26 +302,12 @@ class _SignInScreen extends State<SignInScreen> {
                           EdgeInsets.zero,
                         ),
                       ),
-                      onPressed: () async {
-                        try {
-                          // Send password reset email using Firebase Auth
-                          await FirebaseAuth.instance.sendPasswordResetEmail(
-                              email: emailController.text.trim());
-
-                          // Show success message
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Password reset email sent!')),
-                          );
-
-                          Navigator.of(context)
-                              .pop(); // Close the dialog after reset
-                        } catch (e) {
-                          // Show error message if the email is not found
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Error: $e')),
-                          );
-                        }
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ForgotPasswordScreen()),
+                        );
                       },
                       child: const Text(
                         "Forget password?",

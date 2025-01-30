@@ -1,5 +1,4 @@
 import 'package:condition_report/common_widgets/field_heading.dart';
-import 'package:condition_report/common_widgets/loading_dialog.dart';
 import 'package:condition_report/common_widgets/submit_button.dart';
 import 'package:condition_report/models/occupancy_model.dart';
 import 'package:condition_report/provider/assessment_provider.dart';
@@ -131,7 +130,7 @@ class _OccupancyState extends State<Occupancy> {
                 ),
               );
             } finally {
-              Navigator.pop(context);
+              // Navigator.pop(context);
               // Navigator.pushReplacement(
               //     context,
               //     MaterialPageRoute(

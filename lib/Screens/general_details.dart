@@ -253,7 +253,7 @@ class _GeneralDetailsState extends State<GeneralDetails> {
                 ),
               );
             } finally {
-              Navigator.pop(context);
+              // Navigator.pop(context);
 
               // // Close the loading dialog
               // Navigator.pushReplacement(

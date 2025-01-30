@@ -7,6 +7,7 @@ import 'package:condition_report/Screens/outstanding_photos..dart';
 import 'package:condition_report/Screens/photo_stream.dart';
 import 'package:condition_report/Screens/property_details.dart';
 import 'package:condition_report/common_widgets/submit_button.dart';
+import 'package:condition_report/provider/assessment_provider.dart';
 import 'package:condition_report/services/firestore_services.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -109,10 +110,12 @@ class _ConditionReportState extends State<ConditionReport> {
       ),
       body: StreamBuilder(
         stream: FirebaseFirestore.instance
-            .collection("assessment")
+            .collection("users")
+            .doc(uid)
+            .collection('assessment')
             .doc(widget.assessmentId)
             .snapshots(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
+        builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
                 child: CircularProgressIndicator(
@@ -1164,17 +1167,19 @@ class _ConditionReportState extends State<ConditionReport> {
                               }
 
                               final data = snapshot.data!.data();
-                              List list = data!.entries
-                                  .where((element) =>
-                                      element.key != 'occupancy' &&
-                                      element.key != 'images' &&
-                                      element.key != 'generalDetails' &&
-                                      element.key != 'createdAt' &&
-                                      element.key != 'propertyDetails')
-                                  .map(
-                                    (entry) => MapEntry(entry.key, entry.value),
-                                  )
-                                  .toList();
+                              List list = data?.entries
+                                      .where((element) =>
+                                          element.key != 'occupancy' &&
+                                          element.key != 'images' &&
+                                          element.key != 'generalDetails' &&
+                                          element.key != 'createdAt' &&
+                                          element.key != 'propertyDetails')
+                                      .map(
+                                        (entry) =>
+                                            MapEntry(entry.key, entry.value),
+                                      )
+                                      .toList() ??
+                                  [];
                               return Column(
                                 children: list
                                     .map(

@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'package:condition_report/MainScreens/navigationbar.dart';
 import 'package:condition_report/StartupScreens/signIn.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -15,11 +17,21 @@ class _SplashscreenState extends State<Splashscreen> {
   void initState() {
     super.initState();
 
-    Timer(const Duration(seconds: 2), () {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => SignInScreen()));
-          // context,
-          // MaterialPageRoute(builder: (context) => ConditionReport()));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Timer(const Duration(seconds: 2), () {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => Navigationbar()),
+          );
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => SignInScreen()),
+          );
+        }
+      });
     });
   }
 

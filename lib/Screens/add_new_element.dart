@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:condition_report/Screens/outstanding_photos..dart';
 import 'package:condition_report/Screens/photo_stream.dart';
-import 'package:condition_report/common_widgets/loading_dialog.dart';
 import 'package:condition_report/common_widgets/submit_button.dart';
 import 'package:condition_report/models/image_detail.dart';
 import 'package:condition_report/models/new_element_model.dart';

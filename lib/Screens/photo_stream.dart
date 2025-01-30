@@ -1,7 +1,5 @@
-import 'dart:developer';
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:condition_report/Screens/select_selection.dart';
 import 'package:condition_report/common_widgets/submit_button.dart';
 import 'package:condition_report/models/image_detail.dart';
@@ -92,9 +90,11 @@ class _PhotoStreamScreenState extends State<PhotoStreamScreen> {
 
       // return publicUrl;
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to upload image: $e")),
-      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to upload image: $e")),
+        );
+      }
     }
   }
 
@@ -139,7 +139,7 @@ class _PhotoStreamScreenState extends State<PhotoStreamScreen> {
           }
 
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text("No images available"));
+            return const SizedBox();
           }
 
           List<Map<String, dynamic>> imageList = snapshot.data!;
@@ -171,39 +171,39 @@ class _PhotoStreamScreenState extends State<PhotoStreamScreen> {
                           child: Image.network(
                             imageUrl,
                             fit: BoxFit.cover,
-                            loadingBuilder: (BuildContext context, Widget child,
-                                ImageChunkEvent? loadingProgress) {
-                              if (loadingProgress == null) return child;
+                            // loadingBuilder: (BuildContext context, Widget child,
+                            //     ImageChunkEvent? loadingProgress) {
+                            //   if (loadingProgress == null) return child;
 
-                              return Center(
-                                child: Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    CircularProgressIndicator(
-                                      value:
-                                          loadingProgress.expectedTotalBytes !=
-                                                  null
-                                              ? loadingProgress
-                                                      .cumulativeBytesLoaded /
-                                                  (loadingProgress
-                                                          .expectedTotalBytes ??
-                                                      1)
-                                              : null,
-                                      color: Colors.black,
-                                    ),
-                                    Text(
-                                      loadingProgress.expectedTotalBytes != null
-                                          ? '${((loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1)) * 100).toStringAsFixed(0)}%'
-                                          : '0%',
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
+                            //   return Center(
+                            //     child: Stack(
+                            //       alignment: Alignment.center,
+                            //       children: [
+                            //         CircularProgressIndicator(
+                            //           value:
+                            //               loadingProgress.expectedTotalBytes !=
+                            //                       null
+                            //                   ? loadingProgress
+                            //                           .cumulativeBytesLoaded /
+                            //                       (loadingProgress
+                            //                               .expectedTotalBytes ??
+                            //                           1)
+                            //                   : null,
+                            //           color: Colors.black,
+                            //         ),
+                            //         Text(
+                            //           loadingProgress.expectedTotalBytes != null
+                            //               ? '${((loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1)) * 100).toStringAsFixed(0)}%'
+                            //               : '0%',
+                            //           style: const TextStyle(
+                            //             fontSize: 12,
+                            //             fontWeight: FontWeight.bold,
+                            //           ),
+                            //         ),
+                            //       ],
+                            //     ),
+                            //   );
+                            // },
                             errorBuilder: (context, error, stackTrace) {
                               return const Icon(
                                 Icons.error,
